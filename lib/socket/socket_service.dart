@@ -6,7 +6,7 @@ class SocketConnection {
 
   static void connectSocket(Function onConnect) {
     socket = IO.io(
-        'https://talkangel-api.onrender.com/',
+        'https://talkangels-api.onrender.com/',
         IO.OptionBuilder()
             .setTransports(['websocket']) // for Flutter or Dart VM
             .disableAutoConnect()

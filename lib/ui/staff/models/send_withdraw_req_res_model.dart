@@ -3,8 +3,7 @@ import 'dart:convert';
 SendWithdrawReqResModel sendWithdrawReqResModelFromJson(String str) =>
     SendWithdrawReqResModel.fromJson(json.decode(str));
 
-String sendWithdrawReqResModelToJson(SendWithdrawReqResModel data) =>
-    json.encode(data.toJson());
+String sendWithdrawReqResModelToJson(SendWithdrawReqResModel data) => json.encode(data.toJson());
 
 class SendWithdrawReqResModel {
   int? status;
@@ -19,8 +18,7 @@ class SendWithdrawReqResModel {
     this.data,
   });
 
-  factory SendWithdrawReqResModel.fromJson(Map<String, dynamic> json) =>
-      SendWithdrawReqResModel(
+  factory SendWithdrawReqResModel.fromJson(Map<String, dynamic> json) => SendWithdrawReqResModel(
         status: json["status"],
         success: json["success"],
         message: json["message"],
@@ -37,8 +35,8 @@ class SendWithdrawReqResModel {
 
 class Data {
   String? requestAmount;
-  int? currentAmount;
-  int? pendingAmount;
+  double? currentAmount;
+  double? pendingAmount;
   DateTime? date;
   String? requestStatus;
 

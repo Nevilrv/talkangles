@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
 import 'package:talkangels/ui/angels/main/drawer_pages/report_problem_pages/report_a_problem_screen_controller.dart';
-import 'package:talkangels/ui/angels/widgets/app_app_bar.dart';
-import 'package:talkangels/ui/angels/widgets/app_button.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
 
 class ReportAProblemScreen extends StatefulWidget {
   const ReportAProblemScreen({Key? key}) : super(key: key);
@@ -23,8 +23,8 @@ class _ReportAProblemScreenState extends State<ReportAProblemScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     reportAProblemScreenController.textFieldController;
+    super.dispose();
   }
 
   @override
@@ -87,7 +87,7 @@ class _ReportAProblemScreenState extends State<ReportAProblemScreen> {
                           if (_formKey.currentState!.validate()) {
                             ///  Post Report A Problem Api
                             reportAProblemScreenController
-                                .sendReportAProblem(controller.textFieldController.toString());
+                                .sendReportAProblem(controller.textFieldController.text.toString());
                           }
                         } else {
                           showAppSnackBar(AppString.noInternetConnection);

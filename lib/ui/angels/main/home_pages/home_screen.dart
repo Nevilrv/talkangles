@@ -7,20 +7,20 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/socket/socket_service.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/angels/constant/app_assets.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_assets.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
+import 'package:talkangels/ui/angels/main/home_pages/calling_screen_controller.dart';
 import 'package:talkangels/ui/angels/main/home_pages/home_screen_controller.dart';
 import 'package:talkangels/const/app_routes.dart';
 import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/const/shared_prefs.dart';
 import 'package:talkangels/ui/angels/main/home_pages/person_details_screen.dart';
-import 'package:talkangels/ui/angels/widgets/app_app_bar.dart';
-import 'package:talkangels/ui/angels/widgets/app_button.dart';
-import 'package:talkangels/ui/angels/widgets/app_dialogbox.dart';
-import 'package:talkangels/ui/angels/widgets/app_show_profile_pic.dart';
-import 'package:talkangels/ui/angels/widgets/app_textfield.dart';
-import 'package:talkangels/ui/staff/utils/notification_service.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
+import 'package:talkangels/common/app_dialogbox.dart';
+import 'package:talkangels/common/app_show_profile_pic.dart';
+import 'package:talkangels/common/app_textfield.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -33,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   HandleNetworkConnection handleNetworkConnection = Get.put(HandleNetworkConnection());
   HomeScreenController homeController = Get.put(HomeScreenController());
   TextEditingController talkTimeController = TextEditingController();
+  CallingScreenController callingScreenController = Get.put(CallingScreenController());
+
   final _formKey = GlobalKey<FormState>();
   Razorpay razorpay = Razorpay();
   Timer? timer;
@@ -48,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     if (handleNetworkConnection.isResult == false) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         await homeController.userDetailsApi();
-        log("API====1===");
       });
 
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -57,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           homeController.angleListeners();
           print("socket connection----");
         });
-        log("API====2===");
       });
     }
     homeController.search();
@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           timer?.cancel();
           timer1?.cancel();
         });
-        log('appLifeCycleState inactive');
+        print('appLifeCycleState inactive');
         break;
       case AppLifecycleState.resumed:
         if (handleNetworkConnection.isResult == false) {
@@ -85,49 +85,53 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 homeController.angleListeners();
                 print("socket connection---RESUME-");
               });
-              log("API====5===");
             });
           }
           if (homeController.userDetailsResModel.data == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               await homeController.userDetailsApi();
-              log("API====7===");
             });
           }
         }
-        log('appLifeCycleState resumed');
+        print('appLifeCycleState resumed');
         break;
       case AppLifecycleState.paused:
         setState(() {
           timer?.cancel();
           timer1?.cancel();
         });
-        log('appLifeCycleState paused');
+        print('AppLifecycleState.paused==========HOMESCREEN=>>>>${AppLifecycleState.paused}');
+        if (handleNetworkConnection.isResult == false) {
+          if (callingScreenController.isLeaveChannel == true) {
+            callingScreenController.leaveChannel();
+          }
+        }
+        print('appLifeCycleState paused');
         break;
       case AppLifecycleState.hidden:
         setState(() {
           timer?.cancel();
           timer1?.cancel();
         });
-        log('appLifeCycleState suspending');
+        print('appLifeCycleState suspending');
         break;
       case AppLifecycleState.detached:
         setState(() {
           timer?.cancel();
           timer1?.cancel();
         });
-        log('appLifeCycleState detached');
+        print('appLifeCycleState detached');
         break;
     }
   }
 
   @override
   void dispose() {
-    super.dispose();
     razorpay.clear();
     timer?.cancel();
     timer1?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -152,13 +156,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 Scaffold(
                   drawer: homeDrawer(),
                   appBar: AppAppBar(
-                    appBarHeight: 120, backGroundColor: appBarColor,
+                    appBarHeight: 120,
+                    backGroundColor: appBarColor,
                     titleText: "Hey, ${PreferenceManager().getName().toString()}",
-                    // leadingIcon: Padding(
-                    //   padding: EdgeInsets.only(left: w * 0.06),
-                    //   child: svgAssetImage(AppAssets.menuBar),
-                    // ),
-                    // leadingWidth: w * 0.125,
                     titleSpacing: w * 0.03,
                     action: [
                       // GestureDetector(
@@ -296,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                                           ? greenColor
                                                                           : yellowColor),
                                                               (w * 0.01).addWSpace(),
-                                                              ("${controller.angleAllData[index].totalRating?.toStringAsFixed(1)}  (${controller.angleAllData[index].reviews?.length} Rating)")
+                                                              ("${controller.searchAngelsList[index].totalRating?.toStringAsFixed(1)}  (${controller.searchAngelsList[index].reviews?.length} Rating)")
                                                                   .regularLeagueSpartan(
                                                                       fontColor: controller.searchAngelsList[index]
                                                                                   .activeStatus ==
@@ -327,18 +327,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                               borderRadius: BorderRadius.circular(5),
                                                               border: Border.all(color: textFieldBorderColor)),
                                                           child: Center(
-                                                              child:
-                                                                  // controller.searchAngelsList[index].callStatus ==
-                                                                  //         AppString.busy
-                                                                  //     ? AppString.busy.regularLeagueSpartan(
-                                                                  //         fontSize: 14, fontWeight: FontWeight.w500)
-                                                                  //     : controller.searchAngelsList[index].callStatus ==
-                                                                  //             AppString.notAvailable
-                                                                  //         ? AppString.notAvailableSpec.regularLeagueSpartan(
-                                                                  //             fontSize: 14, fontWeight: FontWeight.w500)
-                                                                  //         :
-                                                                  AppString.talkNow.regularLeagueSpartan(
-                                                                      fontSize: 14, fontWeight: FontWeight.w500)),
+                                                              child: AppString.talkNow.regularLeagueSpartan(
+                                                                  fontSize: 14, fontWeight: FontWeight.w500)),
                                                         ),
                                                       ),
                                                       (w * 0.04).addWSpace(),
@@ -349,13 +339,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                             );
                                           },
                                         )
-                                  : controller.angleAllData == [] || controller.angleAllData.isEmpty
+                                  : controller.angleAllData == [] ||
+                                          controller.angleAllData.isEmpty ||
+                                          controller.allAngelsListData.isEmpty
                                       ? Center(
                                           child: AppString.angelsNotFound.leagueSpartanfs20w600(
                                               fontColor: greyFontColor, fontWeight: FontWeight.w700))
                                       : ListView.builder(
                                           shrinkWrap: true,
-                                          itemCount: controller.angleAllData.length,
+                                          itemCount: controller.allAngelsListData.length,
                                           itemBuilder: (context, index) {
                                             return Padding(
                                               padding: EdgeInsets.only(
@@ -366,9 +358,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                               child: InkWell(
                                                 onTap: () {
                                                   if (networkController.isResult == false) {
-                                                    controller.setAngle(controller.angleAllData[index]);
-                                                    Get.toNamed(Routes.personDetailScreen,
-                                                        arguments: {"angel_id": controller.angleAllData[index].id});
+                                                    controller.setAngle(controller.allAngelsListData[index]);
+                                                    Get.toNamed(Routes.personDetailScreen, arguments: {
+                                                      "angel_id": controller.allAngelsListData[index].id
+                                                    });
                                                   } else {
                                                     showAppSnackBar(AppString.noInternetConnection);
                                                   }
@@ -385,13 +378,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                       Stack(
                                                         children: [
                                                           AppShowProfilePic(
-                                                              image: controller.angleAllData[index].image ?? '',
+                                                              image: controller.allAngelsListData[index].image ?? '',
                                                               onTap: () {
                                                                 showDialog(
                                                                   context: context,
                                                                   builder: (_) => ProfileDialog(
-                                                                      angelId:
-                                                                          controller.angleAllData[index].id.toString()),
+                                                                      angelId: controller.allAngelsListData[index].id
+                                                                          .toString()),
                                                                 );
                                                               },
                                                               borderShow: false,
@@ -403,14 +396,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                               backgroundColor: containerColor,
                                                               radius: 7,
                                                               child: CircleAvatar(
-                                                                backgroundColor:
-                                                                    controller.angleAllData[index].callStatus ==
-                                                                            AppString.available
-                                                                        ? greenColor
-                                                                        : controller.angleAllData[index].callStatus ==
-                                                                                AppString.busy
-                                                                            ? yellowColor
-                                                                            : redFontColor,
+                                                                backgroundColor: controller
+                                                                            .allAngelsListData[index].callStatus ==
+                                                                        AppString.available
+                                                                    ? greenColor
+                                                                    : controller.allAngelsListData[index].callStatus ==
+                                                                            AppString.busy
+                                                                        ? yellowColor
+                                                                        : redFontColor,
                                                                 radius: 4.5,
                                                               ),
                                                             ),
@@ -422,13 +415,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children: [
-                                                          (controller.angleAllData[index].name ?? '')
+                                                          (controller.allAngelsListData[index].name ?? '')
                                                               .regularLeagueSpartan(
                                                                   fontColor: whiteColor,
                                                                   fontSize: 16,
                                                                   fontWeight: FontWeight.w500),
                                                           (h * 0.005).addHSpace(),
-                                                          "${controller.angleAllData[index].gender?[0] ?? ''}-${controller.angleAllData[index].age ?? ''} Yrs • 0 yrs of Experience"
+                                                          "${controller.allAngelsListData[index].gender?[0] ?? ''}-${controller.allAngelsListData[index].age ?? ''} Yrs • 0 yrs of Experience"
                                                               .regularLeagueSpartan(
                                                                   fontColor: whiteColor, fontSize: 10),
                                                           Row(
@@ -437,18 +430,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                             children: [
                                                               Icon(Icons.star,
                                                                   size: 11,
-                                                                  color: controller.angleAllData[index].activeStatus ==
+                                                                  color: controller
+                                                                              .allAngelsListData[index].activeStatus ==
                                                                           AppString.online
                                                                       ? greenColor
                                                                       : yellowColor),
                                                               (w * 0.01).addWSpace(),
-                                                              ("${controller.angleAllData[index].totalRating?.toStringAsFixed(1)}  (${controller.angleAllData[index].reviews?.length} Rating)")
+                                                              ("${controller.allAngelsListData[index].totalRating?.toStringAsFixed(1)}  (${controller.allAngelsListData[index].reviews?.length} Rating)")
                                                                   .regularLeagueSpartan(
-                                                                      fontColor:
-                                                                          controller.angleAllData[index].activeStatus ==
-                                                                                  AppString.online
-                                                                              ? greenColor
-                                                                              : yellowColor,
+                                                                      fontColor: controller.allAngelsListData[index]
+                                                                                  .activeStatus ==
+                                                                              AppString.online
+                                                                          ? greenColor
+                                                                          : yellowColor,
                                                                       fontSize: 10),
                                                             ],
                                                           ),
@@ -458,10 +452,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                       InkWell(
                                                         onTap: () {
                                                           if (networkController.isResult == false) {
-                                                            controller.setAngle(controller.angleAllData[index]);
+                                                            controller.setAngle(controller.allAngelsListData[index]);
                                                             controller.angleCallingApi(
-                                                                controller.angleAllData[index].id!,
-                                                                PreferenceManager().getId());
+                                                                controller.allAngelsListData[index].id!,
+                                                                PreferenceManager().getId().toString());
                                                           } else {
                                                             showAppSnackBar(AppString.noInternetConnection);
                                                           }
@@ -473,20 +467,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                                 borderRadius: BorderRadius.circular(5),
                                                                 border: Border.all(color: textFieldBorderColor)),
                                                             child: Center(
-                                                                child:
-                                                                    // controller.angleAllData[index].callStatus ==
-                                                                    //     AppString.busy
-                                                                    // ? AppString.busy.regularLeagueSpartan(
-                                                                    //     fontSize: 14, fontWeight: FontWeight.w500)
-                                                                    // : controller.angleAllData[index].callStatus ==
-                                                                    //         AppString.notAvailable
-                                                                    //     ? AppString.notAvailableSpec
-                                                                    //         .regularLeagueSpartan(
-                                                                    //             fontSize: 14,
-                                                                    //             fontWeight: FontWeight.w500)
-                                                                    //     :
-                                                                    AppString.talkNow.regularLeagueSpartan(
-                                                                        fontSize: 14, fontWeight: FontWeight.w500))),
+                                                                child: AppString.talkNow.regularLeagueSpartan(
+                                                                    fontSize: 14, fontWeight: FontWeight.w500))),
                                                       ),
                                                       (w * 0.04).addWSpace(),
                                                     ],
@@ -510,7 +492,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                           homeController.angleListeners();
                                           print("socket connection----");
                                         });
-                                        log("API====6===");
                                       });
                                     }
                                   },
@@ -674,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                             Get.back();
                                             razorpay.open(options);
                                           } catch (e) {
-                                            log("ERROR==RAZORPAY   $e");
+                                            print("ERROR==RAZORPAY   $e");
                                           }
                                         }
                                       } else {
@@ -911,6 +892,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         title: AppString.logOut,
                         fontColor: redFontColor,
                         onTap: () {
+                          closeDrawer();
                           showModalBottomSheet<void>(
                             context: context,
                             builder: (BuildContext context) {
@@ -997,7 +979,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                                           setState(() {
                                                                             timer?.cancel();
                                                                             timer1?.cancel();
-                                                                            // timer2?.cancel();
                                                                           });
 
                                                                           Get.back();
@@ -1126,10 +1107,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void handlePaymentErrorResponse(PaymentFailureResponse response) {
-    log("${response.code}", name: "ERRORcode");
-    log("${response.message}", name: "ERRORmessage");
-    log("${response.error}", name: "ERRORerror");
-
     paymentFaildDialogBox(context,
         h: MediaQuery.of(context).size.height,
         w: MediaQuery.of(context).size.width,
@@ -1138,13 +1115,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void handlePaymentSuccessResponse(PaymentSuccessResponse response) {
-    log(response.data.toString(), name: "SUCCESS");
-
     ///API calling _Add wallet Amount
-    homeController.addMyWalletAmountApi(
-      talkTimeController.text,
-      response.paymentId.toString(),
-    );
+    homeController.addMyWalletAmountApi(talkTimeController.text, response.paymentId.toString()).then((result) async {
+      await homeController.userDetailsApi();
+    });
 
     Get.back();
     appDialogBox(
@@ -1159,7 +1133,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void handleExternalWalletSelected(ExternalWalletResponse response) {
-    log(response.walletName.toString(), name: "EXTERNALWALLET");
     paymentFaildDialogBox(context,
         h: MediaQuery.of(context).size.height,
         w: MediaQuery.of(context).size.width,

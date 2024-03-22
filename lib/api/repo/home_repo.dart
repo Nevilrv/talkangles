@@ -5,8 +5,7 @@ import 'package:talkangels/api/api_helper.dart';
 import 'package:talkangels/const/request_constant.dart';
 import 'package:talkangels/models/response_item.dart';
 import 'package:talkangels/const/shared_prefs.dart';
-
-import '../../ui/staff/models/update_staff_details_res_model.dart';
+import 'package:talkangels/ui/staff/models/update_staff_details_res_model.dart';
 
 ///Angels
 class HomeRepoAngels {
@@ -135,6 +134,7 @@ class HomeRepoAngels {
 ///Staff
 class HomeRepoStaff {
   /// Get staff Details
+
   static Future<ResponseItem> getStaffDetail() async {
     ResponseItem result;
     String userId = PreferenceManager().getId().toString();
@@ -203,10 +203,11 @@ class HomeRepoStaff {
       "seconds": minutes,
     };
     log("requestData--------------> ${requestData}");
+    log('requestData===========>>>>${requestData}');
 
     String requestUrl = AppUrls.BASE_URL + MethodNamesStaff.addCallHistory;
     result = await BaseApiHelper.postRequestToken(requestUrl, requestData);
-    log("result--------------> ${result.data}");
+    log("result------------addCallHistory--> ${result.data}");
     return result;
   }
 
@@ -224,7 +225,7 @@ class HomeRepoStaff {
 
     String requestUrl = AppUrls.BASE_URL + CommonApis.rejectCall;
     result = await BaseApiHelper.postRequestToken(requestUrl, requestData);
-    log("result--------------> ${result.data}");
+    log("result------------callReject--> ${result.data}");
 
     return result;
   }
@@ -249,6 +250,7 @@ class HomeRepoStaff {
     Map<String, dynamic> requestData = {
       "call_status": callStatus,
     };
+    print("requestData___________${requestData}");
 
     String requestUrl = AppUrls.BASE_URL + MethodNamesStaff.updateCallStatus + userId;
     result = await BaseApiHelper.putRequestToken(requestUrl, requestData);
@@ -257,13 +259,29 @@ class HomeRepoStaff {
 
   /// Post Staff Details
   static Future<UpdateStaffDetailResModel?> updateStaffDetails(
-      {String? userName, String? name, String? gender, String? bio, String? language, String? age, File? image}) async {
+      {String? userName,
+      String? name,
+      String? gender,
+      String? bio,
+      String? language,
+      String? age,
+      String? image,
+      String? fileType}) async {
     UpdateStaffDetailResModel? result;
 
+    log("image-------------${image}");
     var res = await BaseApiHelper.putStaffDetails(
-        age: age, language: language, bio: bio, name: name, userName: userName, image: image, gender: gender);
+        age: age,
+        language: language,
+        bio: bio,
+        name: name,
+        userName: userName,
+        image: image,
+        gender: gender,
+        fileType: fileType);
     result = UpdateStaffDetailResModel.fromJson(res);
     log("result___________________  ${res}");
+
     return result;
   }
 }

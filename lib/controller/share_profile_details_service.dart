@@ -13,7 +13,7 @@ import 'package:talkangels/ui/startup/login_screen.dart';
 class DynamicLinkService {
   final firebaseDynamicLinks = FirebaseDynamicLinks.instance;
   final androidParameters = const AndroidParameters(
-    packageName: "com.example.talkangels",
+    packageName: "com.talkangels.talkangels",
   );
   final iosParameters = const IOSParameters(
     bundleId: "",
@@ -90,14 +90,6 @@ class DynamicLinkService {
 
         log("angelIds=====$angelIds");
         if (angelIds != null) {
-          // Get.offAllNamed(Routes.homeScreen);
-          // Get.to(
-          //   () => const PersonDetailScreen(),
-          //   arguments: {
-          //     "angel_id": angelIds,
-          //   },
-          // );
-
           if (PreferenceManager().getLogin() == true) {
             if (PreferenceManager().getRole() == "user") {
               Get.offAll(() => const HomeScreen());
@@ -110,12 +102,9 @@ class DynamicLinkService {
                   },
                 );
               });
-
-              log("USER===Home");
             } else {
               showAppSnackBar("You Have Not Show This Profile");
               Get.offAllNamed(Routes.bottomBarScreen);
-              log("STAFF===Bottom");
             }
           } else {
             Get.offAll(() => const LoginScreen());
@@ -136,11 +125,9 @@ class DynamicLinkService {
             if (PreferenceManager().getRole() == "user") {
               showAppSnackBar("You Have Already Registered!");
               Get.offAllNamed(Routes.homeScreen);
-              log("USER===Home");
             } else {
               showAppSnackBar("You Have Already Registered!");
               Get.offAllNamed(Routes.bottomBarScreen);
-              log("STAFF===Bottom");
             }
           } else {
             Get.offAll(

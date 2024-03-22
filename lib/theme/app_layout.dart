@@ -3,12 +3,13 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:talkangels/common/app_button.dart';
+
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/controller/handle_network_connections.dart';
-import 'package:talkangels/ui/staff/constant/app_color.dart';
-import 'package:talkangels/ui/staff/constant/app_assets.dart';
+import 'package:talkangels/const/app_assets.dart';
 import 'package:talkangels/ui/staff/constant/app_string.dart';
-import 'package:talkangels/ui/staff/widgets/app_button.dart';
 
 showAppSnackBar(
   String tittle,
@@ -26,27 +27,7 @@ showAppSnackBar(
   );
 }
 
-errorScreen({String? title}) {
-  return SingleChildScrollView(
-    child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: Get.width * 0.06),
-      child: Column(
-        children: [
-          (Get.height * 0.10).addHSpace(),
-          SizedBox(
-              height: Get.height * 0.3,
-              width: Get.width * 0.6,
-              child: assetImage(AppAssets.somethingWentWrongAnimationAssets, fit: BoxFit.cover)),
-          (Get.height * 0.05).addHSpace(),
-          (title ?? '').leagueSpartanfs20w600(fontSize: 24, fontColor: redColor),
-          (Get.height * 0.17).addHSpace(),
-        ],
-      ),
-    ),
-  );
-}
-
-class ErrorScreen extends StatelessWidget {
+class ErrorScreen extends StatefulWidget {
   ErrorScreen({
     Key? key,
     required this.onTap,
@@ -55,11 +36,19 @@ class ErrorScreen extends StatelessWidget {
   final void Function() onTap;
   final bool? isLoading;
 
+  @override
+  State<ErrorScreen> createState() => _ErrorScreenState();
+}
+
+class _ErrorScreenState extends State<ErrorScreen> {
   HandleNetworkConnection handleNetworkConnection = Get.put(HandleNetworkConnection());
+
   StreamSubscription<ConnectivityResult>? connectivitySubscription;
 
+  @override
   void dispose() {
     connectivitySubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -70,33 +59,31 @@ class ErrorScreen extends StatelessWidget {
       height: h,
       width: w,
       decoration: const BoxDecoration(gradient: appGradient),
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: w * 0.06),
-            child: Column(
-              children: [
-                (h * 0.1).addHSpace(),
-                SizedBox(
-                    height: h * 0.3,
-                    width: w * 0.6,
-                    child: assetImage(AppAssets.somethingWentWrongAnimationAssets, fit: BoxFit.cover)),
-                (h * 0.05).addHSpace(),
-                AppString.somethingWentWrong.leagueSpartanfs20w600(fontSize: 24),
-                (h * 0.02).addHSpace(),
-                AppString.checkYourConnectionThenRefreshThePage
-                    .regularLeagueSpartan(fontColor: greyFontColor, textAlign: TextAlign.center),
-                (h * 0.13).addHSpace(),
-                AppButton(
-                  onTap: onTap,
-                  color: redColor,
-                  child: isLoading == true
-                      ? const Center(child: CircularProgressIndicator(color: whiteColor))
-                      : AppString.refresh.leagueSpartanfs20w600(),
-                ),
-                (h * 0.05).addHSpace(),
-              ],
-            ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: w * 0.06),
+          child: Column(
+            children: [
+              (h * 0.1).addHSpace(),
+              SizedBox(
+                  height: h * 0.3,
+                  width: w * 0.6,
+                  child: assetImage(AppAssets.somethingWentWrongAnimationAssets, fit: BoxFit.cover)),
+              (h * 0.05).addHSpace(),
+              AppString.somethingWentWrong.leagueSpartanfs20w600(fontSize: 24),
+              (h * 0.02).addHSpace(),
+              AppString.checkYourConnectionThenRefreshThePage
+                  .regularLeagueSpartan(fontColor: greyFontColor, textAlign: TextAlign.center),
+              (h * 0.13).addHSpace(),
+              AppButton(
+                onTap: widget.onTap,
+                color: redColor,
+                child: widget.isLoading == true
+                    ? const Center(child: CircularProgressIndicator(color: whiteColor))
+                    : AppString.refresh.leagueSpartanfs20w600(),
+              ),
+              (h * 0.05).addHSpace(),
+            ],
           ),
         ),
       ),
@@ -120,8 +107,8 @@ class _StaffErrorScreenState extends State<StaffErrorScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     connectivitySubscription?.cancel();
+    super.dispose();
   }
 
   @override

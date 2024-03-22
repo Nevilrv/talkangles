@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:talkangels/ui/angels/constant/app_assets.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_assets.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/angels/widgets/app_app_bar.dart';
-import 'package:talkangels/ui/angels/widgets/app_button.dart';
-import 'package:talkangels/ui/angels/widgets/app_textfield.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
+
+import 'package:talkangels/common/app_textfield.dart';
+
 import 'package:talkangels/ui/startup/referral_code_pages/referral_code_controller.dart';
 import 'package:talkangels/const/app_routes.dart';
 import 'package:talkangels/const/extentions.dart';

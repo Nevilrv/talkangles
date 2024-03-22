@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
 import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/const/shared_prefs.dart';
-import 'package:talkangels/ui/angels/widgets/app_app_bar.dart';
-import 'package:talkangels/ui/angels/widgets/app_show_profile_pic.dart';
-import 'package:talkangels/ui/angels/widgets/app_textfield.dart';
+
+import 'package:talkangels/common/app_show_profile_pic.dart';
+import 'package:talkangels/common/app_textfield.dart';
+import 'package:talkangels/common/app_app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

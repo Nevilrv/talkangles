@@ -29,7 +29,7 @@ class ReferralCodeController extends GetxController {
             showAppSnackBar(referralCodeResponseModel.message ?? '');
             Get.offAllNamed(Routes.homeScreen);
           } else {
-            log("referralCodeResponseModel.message   ${referralCodeResponseModel.status}  ${referralCodeResponseModel.message}");
+            showAppSnackBar(referralCodeResponseModel.message.toString());
           }
         }
 

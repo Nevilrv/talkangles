@@ -1,19 +1,23 @@
 import 'dart:developer';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:talkangels/const/extentions.dart';
+import 'package:talkangels/const/shared_prefs.dart';
 import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/staff/constant/app_assets.dart';
+import 'package:talkangels/const/app_assets.dart';
 import 'package:talkangels/ui/staff/constant/app_string.dart';
 import 'package:talkangels/ui/staff/main/home_pages/home_controller.dart';
-import 'package:talkangels/ui/staff/widgets/app_appbar.dart';
-import 'package:talkangels/ui/staff/constant/app_color.dart';
-import 'package:talkangels/ui/staff/widgets/app_button.dart';
+
+import 'package:talkangels/const/app_color.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
 import 'package:talkangels/ui/staff/models/get_staff_detail_res_model.dart';
-import 'package:talkangels/ui/staff/widgets/app_textfield.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:talkangels/common/app_show_profile_pic.dart';
+import 'package:talkangels/common/app_textfield.dart';
+import 'package:talkangels/ui/staff/utils/notification_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -22,26 +26,54 @@ class EditProfileScreen extends StatefulWidget {
   State<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> with WidgetsBindingObserver {
   HomeController homeController = Get.put(HomeController());
   HandleNetworkConnection handleNetworkConnection = Get.find();
   final _formKey = GlobalKey<FormState>();
   Data? angelData = Get.arguments["profile_detail"];
-  File? pickedImage;
+  String? pickedImage;
   bool isPicked = false;
-  String? fileName;
   String genderSelect = "Female";
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
     demo();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        print('appLifeCycleState inactive');
+        break;
+      case AppLifecycleState.resumed:
+        log("PreferenceManager().getScreen()--------------> ${PreferenceManager().getScreen()}");
+
+        NotificationService.getInitialMsg();
+
+        log('call screen--erdrfefe4rf-');
+        print('appLifeCycleState resumed');
+        break;
+      case AppLifecycleState.paused:
+        print('appLifeCycleState paused');
+        break;
+      case AppLifecycleState.hidden:
+        print('appLifeCycleState suspending');
+        break;
+      case AppLifecycleState.detached:
+        print('appLifeCycleState detached');
+        break;
+    }
   }
 
   demo() {
     homeController.bioController = TextEditingController(text: angelData?.bio);
     homeController.languageController = TextEditingController(text: angelData?.language);
-    homeController.ageController = TextEditingController(text: angelData?.age);
+    homeController.ageController = TextEditingController(text: "${angelData!.age}");
     homeController.userNameController = TextEditingController(text: angelData?.userName);
     homeController.nameController = TextEditingController(text: angelData?.name);
     genderSelect = angelData!.gender!;
@@ -49,13 +81,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
-    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    homeController.updateStaffDetailsLoading;
     homeController.bioController;
     homeController.languageController;
     homeController.ageController;
     homeController.userNameController;
     homeController.nameController;
     genderSelect;
+    super.dispose();
   }
 
   @override
@@ -88,13 +122,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     (h * 0.05).addHSpace(),
                                     GestureDetector(
                                       onTap: () async {
-                                        final ImagePicker picker = ImagePicker();
-                                        final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-                                        if (image != null) {
-                                          pickedImage = File(image.path);
-                                          setState(() {
-                                            isPicked = true;
-                                          });
+                                        try {
+                                          FilePickerResult? image = await FilePicker.platform.pickFiles(
+                                            type: FileType.custom,
+                                            allowedExtensions: ['jpg', 'jpeg', 'png'],
+                                          );
+
+                                          if (image != null) {
+                                            pickedImage = image.files.single.path;
+
+                                            setState(() {
+                                              isPicked = true;
+                                            });
+
+                                            log('pickedImage.path===========>>>>${pickedImage}');
+                                          }
+                                        } catch (e) {
+                                          log("EEEEEE_________${e}");
                                         }
                                       },
                                       child: Container(
@@ -118,7 +162,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                               borderRadius: BorderRadius.circular(200),
                                               child: isPicked
                                                   ? Image.file(
-                                                      pickedImage!,
+                                                      File(pickedImage!),
+                                                      // pickedImage,
                                                       fit: BoxFit.cover,
                                                     )
                                                   : angelData?.image == "" || angelData?.image == "0"
@@ -229,16 +274,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         if (handleNetworkConnection.isResult == false) {
                                           if (_formKey.currentState!.validate()) {
                                             /// UPDATE STAFF DETAILS API
+                                            print("pickedImage_______________${pickedImage}");
+
                                             if (pickedImage != null) {
+                                              String fileType = pickedImage!.toString().split('.').last;
+
                                               log("IMAGE_NOT_NULL");
                                               await controller.updateStaffDetails(
                                                 userName: controller.userNameController.text,
                                                 language: controller.languageController.text,
                                                 gender: genderSelect,
                                                 bio: controller.bioController.text,
-                                                age: "${controller.ageController.text} Years",
+                                                age: controller.ageController.text,
                                                 name: controller.nameController.text,
                                                 image: pickedImage,
+                                                fileType: fileType,
                                               );
                                             } else {
                                               log("IMAGE_NULL");
@@ -247,7 +297,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 language: controller.languageController.text,
                                                 gender: genderSelect,
                                                 bio: controller.bioController.text,
-                                                age: "${controller.ageController.text} Years",
+                                                age: controller.ageController.text,
                                                 name: controller.nameController.text,
                                               );
                                             }

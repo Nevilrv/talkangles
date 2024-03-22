@@ -1,5 +1,5 @@
 class AppUrls {
-  static const BASE_URL = "https://talkangel-api.onrender.com/api/v1/";
+  static const BASE_URL = "https://talkangels-api.onrender.com/api/v1/";
 }
 
 class MethodNamesAngels {

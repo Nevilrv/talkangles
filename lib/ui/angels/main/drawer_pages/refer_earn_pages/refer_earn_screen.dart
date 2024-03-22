@@ -4,13 +4,13 @@ import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/angels/constant/app_assets.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_assets.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
 import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/controller/share_profile_details_service.dart';
-import 'package:talkangels/ui/angels/widgets/app_app_bar.dart';
-import 'package:talkangels/ui/angels/widgets/app_button.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
 
 class ReferEarnScreen extends StatefulWidget {
   const ReferEarnScreen({Key? key}) : super(key: key);

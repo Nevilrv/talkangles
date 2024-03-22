@@ -1,7 +1,5 @@
 import 'dart:convert';
-// import 'dart:developer';
-import 'dart:math';
-
+import 'dart:developer';
 import 'package:get/get.dart';
 import 'package:otpless_flutter/otpless_flutter.dart';
 import 'package:talkangels/api/repo/auth_repo.dart';
@@ -17,16 +15,32 @@ import 'package:talkangels/const/shared_prefs.dart';
 class LoginScreenController extends GetxController {
   ReferralCodeController referralCodeController = Get.put(ReferralCodeController());
   UserLoginResponseModel userRest = UserLoginResponseModel();
+  WhatsappLoginResponseModel resData = WhatsappLoginResponseModel();
 
   final _otplessFlutterPlugin = Otpless();
   String? phoneNumber;
   String? code;
   String? number;
+  bool isLoading = false;
+  bool fillName = false;
+  bool isWhatsAppIsInstall = false;
+
+  var extra = {
+    "method": "get",
+    "params": {
+      "cid": "METB48YS2X3DECCEFC5C6C28NFI00XUP",
+      "appId": "S2H09ICR959ARMY2J6NH",
+    }
+  };
 
   /// WhatsApp Login
   Future<void> isWhatsappInstalled() async {
     _otplessFlutterPlugin.isWhatsAppInstalled().then(
       (value) {
+        log('value===========>>>>${value}');
+        isWhatsAppIsInstall = value;
+        update();
+
         if (!value) {
           showAppSnackBar(AppString.pleaseInstallTheWhatsapp);
         }
@@ -34,13 +48,15 @@ class LoginScreenController extends GetxController {
     );
   }
 
-  Future<void> startOtpless(String? referCode) async {
+  Future<WhatsappLoginResponseModel> startOtpless(String? referCode) async {
     await _otplessFlutterPlugin.hideFabButton();
 
-    _otplessFlutterPlugin.openLoginPage((result) async {
+    await _otplessFlutterPlugin.openLoginPage((result) async {
       try {
         if (result['data'] != null) {
-          WhatsappLoginResponseModel resData = WhatsappLoginResponseModel.fromJson(result['data']);
+          resData = WhatsappLoginResponseModel.fromJson(result['data']);
+
+          log('result===========>>>>${result}');
           phoneNumber = result['data']["mobile"]["number"];
           if (phoneNumber!.length > 10) {
             code = phoneNumber!.substring(0, 2);
@@ -50,32 +66,36 @@ class LoginScreenController extends GetxController {
             number = phoneNumber;
           }
 
-          /// API signIn
-          await signIn(
-            name: resData.waName ?? '',
-            mNo: number ?? '',
-            cCode: code ?? '',
-            fcm: PreferenceManager().getFCMNotificationToken() ?? '',
-            referCode: referCode,
-          );
+          if (resData.mobile?.name != null) {
+            fillName = false;
+            update();
+
+            /// API signIn
+            await signIn(
+              name: resData.mobile?.name ?? '',
+              mNo: number ?? '',
+              cCode: code ?? '',
+              fcm: PreferenceManager().getFCMNotificationToken() ?? '',
+              referCode: referCode,
+            );
+          } else {
+            fillName = true;
+            update();
+          }
         }
       } catch (e) {
-        // log('----ERROR>>>$e');
+        log('----ERROR>>>$e');
       }
-    });
+    }, jsonObject: extra);
+    return resData;
   }
 
   /// API Calling
 
-  RxBool isLoading = false.obs;
-
   Future<void> signIn({String? name, String? mNo, String? cCode, String? fcm, String? referCode}) async {
-    // log("NAME  ${name}");
-    // log("MOBILENO  ${mNo}");
-    // log("COUNTRYCODE  ${cCode}");
-    // log("FCMTOKEN  ${fcm}");
+    isLoading = true;
+    update();
 
-    isLoading.value = true;
     ResponseItem result = ResponseItem(message: AppString.somethingWentWrong);
     result = await AuthRepo.userLogin(
       name.toString(),
@@ -87,10 +107,11 @@ class LoginScreenController extends GetxController {
     try {
       if (result.status) {
         if (result.data != null) {
-          isLoading.value = false;
           userRest = UserLoginResponseModel.fromJson(result.data);
 
           if (userRest.status == 200) {
+            isLoading = false;
+            update();
             PreferenceManager().setLogin(true);
             PreferenceManager().setName(userRest.data?.name ?? '');
             PreferenceManager().setUserName(userRest.data?.userName ?? '');
@@ -98,24 +119,18 @@ class LoginScreenController extends GetxController {
             PreferenceManager().setId(userRest.data?.id ?? '');
             PreferenceManager().setToken(userRest.token ?? '');
             PreferenceManager().setUserDetails(jsonEncode(userRest.data));
-
             PreferenceManager().setRole(userRest.data?.role ?? '');
-            print("TOKENNNN:::  ${PreferenceManager().getToken()}");
-            // log("userRest.data!.role----->${userRest.data?.role}");
+
             if (userRest.data!.role == "user") {
               if (referCode == '') {
-                // log("==1===homescreen===");
                 Get.offAllNamed(Routes.homeScreen);
               } else {
-                // log("=2=referred====");
                 if (userRest.userType == "old") {
                   ///login
-                  // log("=5===already referred===");
                   Get.offAllNamed(Routes.homeScreen);
                 } else {
                   ///register
                   ///call post referralCode API
-                  // log("=6===add referred===");
                   await referralCodeController.referralCodeApi(referCode!);
                 }
               }
@@ -123,24 +138,23 @@ class LoginScreenController extends GetxController {
               Get.offAllNamed(Routes.bottomBarScreen);
             }
             showAppSnackBar(AppString.loginSuccessfully);
-
-            // log("${result.data}", name: "RESULT_DATA");
             print("RESULT_DATA====${result.data}");
 
             userRest.data;
           } else {
+            isLoading = false;
+            update();
             // print("userRest.message====${userRest.message}");
           }
-          update();
         }
       } else {
-        isLoading.value = false;
+        isLoading = false;
+        update();
       }
     } catch (e) {
-      isLoading.value = false;
+      isLoading = false;
+      update();
       print("ERROR  1======>  $e");
-      // showAppSnackBar("$e");
     }
-    update();
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -8,15 +7,19 @@ import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/const/shared_prefs.dart';
 import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/staff/constant/app_assets.dart';
-import 'package:talkangels/ui/staff/constant/app_color.dart';
+import 'package:talkangels/const/app_assets.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/staff/constant/app_string.dart';
 import 'package:talkangels/ui/staff/main/bottom_navigation_bar/bottom_bar_controller.dart';
 import 'package:talkangels/ui/staff/main/home_pages/home_controller.dart';
-import 'package:talkangels/ui/staff/widgets/app_appbar.dart';
-import 'package:talkangels/ui/staff/widgets/app_button.dart';
-import 'package:talkangels/ui/staff/widgets/app_show_profile_pic.dart';
-import 'package:talkangels/ui/staff/widgets/common_container.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
+import 'package:talkangels/common/app_show_profile_pic.dart';
+import 'package:talkangels/common/app_textfield.dart';
+
+import 'package:talkangels/common/common_container.dart';
+
+import '../../utils/notification_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -35,46 +38,43 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int? amounts;
   final _formKey = GlobalKey<FormState>();
 
-  int tap = 0;
-  bool earning = false;
-  Timer? timer1;
-
   @override
   void initState() {
     super.initState();
+    log("PreferenceManager().getScreen()--------------> ${PreferenceManager().getScreen()}");
     WidgetsBinding.instance.addObserver(this);
-    // if (handleNetworkConnection.isResult == false) {
-    //   SchedulerBinding.instance.addPostFrameCallback((_) async {
-    //     await homeController.getStaffDetailApi();
-    //   });
-    // }
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.paused) {
-  //     // log("paused--------------> ");
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-  //       // await callHandle1();
-  //       NotificationService.checkAndNavigationCallingPage();
-  //     });
-  //
-  //     // log("resumed--------------> ");
-  //   } else if (state == AppLifecycleState.inactive) {
-  //     // log("inactive--------------> ");
-  //   } else if (state == AppLifecycleState.detached) {
-  //     // log("detached--------------> ");
-  //   }
-  // }
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        print('appLifeCycleState inactive');
+        break;
+      case AppLifecycleState.resumed:
+        NotificationService.getInitialMsg();
+
+        log('call screen--erdrfefe4rf-');
+        print('appLifeCycleState resumed');
+        break;
+      case AppLifecycleState.paused:
+        print('appLifeCycleState paused');
+        break;
+      case AppLifecycleState.hidden:
+        print('appLifeCycleState suspending');
+        break;
+      case AppLifecycleState.detached:
+        print('appLifeCycleState detached');
+        break;
+    }
+  }
 
   @override
   void dispose() {
-    super.dispose();
-    tap;
     homeController.withdrawController;
-    timer1?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -89,323 +89,390 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ? requestStatus = false
                 : requestStatus = true;
 
-            return Scaffold(
-              drawer: homeDrawer(),
-              appBar: AppAppBar(
-                appBarHeight: 80,
-                backGroundColor: appBarColor,
-                titleText: "${AppString.hey}${PreferenceManager().getName()}",
-                // leadingIcon: Padding(
-                //   padding: EdgeInsets.only(left: w * 0.06),
-                //   child: svgAssetImage(AppAssets.menuBar),
-                // ),
-                // leadingWidth: w * 0.125,
-                titleSpacing: w * 0.06,
-                action: [
-                  AppShowProfilePic(
-                    image: controller.getStaffDetailResModel.data?.image ?? '',
-                    onTap: () {
-                      Get.toNamed(Routes.profileDetailsScreen);
-                    },
-                  ),
-                  (w * 0.045).addWSpace(),
-                ],
-              ),
-              body: Container(
-                height: h,
-                width: w,
-                decoration: const BoxDecoration(gradient: appGradient),
-                child: controller.isLoading == true && controller.getStaffDetailResModel.data == null
-                    ? const Center(child: CircularProgressIndicator(color: whiteColor))
-                    : controller.getStaffDetailResModel.status == 200
-                        ? SafeArea(
-                            child: SingleChildScrollView(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: w * 0.04),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 1,
-                                          child: CommonContainer(
-                                            height: h * 0.15,
-                                            width: double.infinity,
-                                            bottomChild:
-                                                controller.getStaffDetailResModel.data?.listing?.totalMinutes ?? '',
-                                            title: AppString.total,
-                                            subTitle: AppString.minutes,
-                                            icon: Icons.timer_outlined,
-                                          ),
-                                        ),
-                                        (w * 0.03).addWSpace(),
-                                        Expanded(
-                                          flex: 1,
-                                          child: CommonContainer(
-                                            height: h * 0.15,
-                                            width: double.infinity,
-                                            bottomChild:
-                                                "₹ ${controller.getStaffDetailResModel.data?.earnings?.currentEarnings ?? ''}",
-                                            title: AppString.total,
-                                            subTitle: AppString.currentEarnings,
-                                            icon: Icons.payments_outlined,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(vertical: h * 0.015),
-                                      child: CommonContainer(
-                                        height: h * 0.15,
-                                        width: double.infinity,
-                                        bottomChild:
-                                            "${controller.getStaffDetailResModel.data?.earnings?.totalMoneyWithdraws ?? ''}",
-                                        title: AppString.total,
-                                        subTitle: AppString.moneyWithdraws,
-                                        icon: Icons.book_online,
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 1,
-                                          child: CommonContainer(
-                                            height: h * 0.15,
-                                            width: double.infinity,
-                                            bottomChild:
-                                                "₹ ${controller.getStaffDetailResModel.data?.earnings?.totalPendingMoney ?? ''}",
-                                            title: AppString.total,
-                                            subTitle: AppString.pendingMoney,
-                                            icon: Icons.monetization_on_outlined,
-                                          ),
-                                        ),
-                                        (w * 0.03).addWSpace(),
-                                        Expanded(
-                                          flex: 1,
-                                          child: CommonContainer(
-                                            height: h * 0.15,
-                                            width: double.infinity,
-                                            bottomChild:
-                                                "${controller.getStaffDetailResModel.data?.earnings?.sentWithdrawRequest ?? ''}",
-                                            title: AppString.withdraw,
-                                            subTitle: AppString.requestSent,
-                                            icon: Icons.check_circle_outline,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(vertical: h * 0.015),
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: w * 0.03, vertical: h * 0.015),
-                                        decoration: BoxDecoration(
-                                            color: containerColor, borderRadius: BorderRadius.circular(20)),
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+            return RefreshIndicator(
+              onRefresh: () {
+                if (handleNetworkConnection.isResult == false) {
+                  /// GET STAFF DETAILS API
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    await homeController.getStaffDetailApi();
+                  });
+                }
+                return Future<void>.delayed(const Duration(seconds: 3));
+              },
+              child: CustomScrollView(
+                slivers: [
+                  SliverFillRemaining(
+                    child: Stack(
+                      children: [
+                        Scaffold(
+                          drawer: homeDrawer(),
+                          appBar: AppAppBar(
+                            appBarHeight: 80,
+                            backGroundColor: appBarColor,
+                            titleText: "${AppString.hey}${PreferenceManager().getName()}",
+                            titleSpacing: w * 0.06,
+                            action: [
+                              AppShowProfilePic(
+                                image: controller.getStaffDetailResModel.data?.image ?? '',
+                                onTap: () {
+                                  Get.toNamed(Routes.profileDetailsScreen);
+                                },
+                              ),
+                              (w * 0.045).addWSpace(),
+                            ],
+                          ),
+                          body: Container(
+                            height: h,
+                            width: w,
+                            decoration: const BoxDecoration(gradient: appGradient),
+                            child: controller.isLoading == true && controller.getStaffDetailResModel.data == null
+                                ? const Center(child: CircularProgressIndicator(color: whiteColor))
+                                : controller.getStaffDetailResModel.status == 200
+                                    ? SafeArea(
+                                        child: SingleChildScrollView(
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: w * 0.04),
+                                            child: Column(
                                               children: [
                                                 Row(
                                                   children: [
-                                                    AppString.withdraw
-                                                        .regularLeagueSpartan(fontSize: 14, fontColor: appColorBlue),
-                                                    AppString.requestStatus.regularLeagueSpartan(
-                                                        fontSize: 14, fontWeight: FontWeight.w600),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: CommonContainer(
+                                                        height: h * 0.15,
+                                                        width: double.infinity,
+                                                        bottomChild: controller
+                                                                .getStaffDetailResModel.data?.listing?.totalMinutes ??
+                                                            '',
+                                                        title: AppString.total,
+                                                        subTitle: AppString.minutes,
+                                                        icon: Icons.timer_outlined,
+                                                      ),
+                                                    ),
+                                                    (w * 0.03).addWSpace(),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: CommonContainer(
+                                                        height: h * 0.15,
+                                                        width: double.infinity,
+                                                        bottomChild:
+                                                            "₹ ${controller.getStaffDetailResModel.data?.earnings?.currentEarnings ?? ''}",
+                                                        title: AppString.total,
+                                                        subTitle: AppString.currentEarnings,
+                                                        icon: Icons.payments_outlined,
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
-                                                AppString.oneLineExplanation.regularLeagueSpartan(
-                                                    fontColor: greyFontColor,
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w400),
-                                              ],
-                                            ),
-                                            const Spacer(),
-                                            Switch(
-                                              activeColor: appColorGreen,
-                                              inactiveTrackColor: textFieldBorderColor,
-                                              thumbColor: MaterialStateProperty.resolveWith((Set states) {
-                                                if (states.contains(MaterialState.disabled)) {
-                                                  return containerColor.withOpacity(0.05);
-                                                }
-                                                return containerColor;
-                                              }),
-                                              value: requestStatus,
-                                              onChanged: (value) {
-                                                /// Sent Withdraw Request API
-                                                if ((controller
-                                                        .getStaffDetailResModel.data?.earnings?.totalPendingMoney)! >
-                                                    0) {
-                                                  if (requestStatus == false) {
-                                                    Get.dialog(
-                                                      barrierDismissible: false,
-                                                      AlertDialog(
-                                                        insetPadding:
-                                                            EdgeInsets.symmetric(horizontal: Get.width * 0.08),
-                                                        contentPadding: EdgeInsets.all(Get.width * 0.05),
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(10)),
-                                                        content: Builder(
-                                                          builder: (context) {
-                                                            return Container(
-                                                              padding: EdgeInsets.zero,
-                                                              height: Get.height * 0.4,
-                                                              width: Get.width * 0.9,
-                                                              child: Form(
-                                                                key: _formKey,
-                                                                child: Column(
-                                                                  children: [
-                                                                    (Get.height * 0.03).addHSpace(),
-                                                                    Row(
-                                                                      mainAxisAlignment: MainAxisAlignment.center,
-                                                                      children: [
-                                                                        AppString.totalMoney.regularLeagueSpartan(
-                                                                            fontColor: blackColor,
-                                                                            fontSize: 18,
-                                                                            fontWeight: FontWeight.w700),
-                                                                        " : ₹ ${controller.getStaffDetailResModel.data?.earnings?.totalPendingMoney ?? ''}"
-                                                                            .regularLeagueSpartan(
-                                                                                fontColor: blackColor,
-                                                                                fontSize: 18,
-                                                                                fontWeight: FontWeight.w900),
-                                                                      ],
-                                                                    ),
-                                                                    (Get.height * 0.05).addHSpace(),
-                                                                    TextFormField(
-                                                                      keyboardType: TextInputType.number,
-                                                                      controller: controller.withdrawController,
-                                                                      validator: (value) {
-                                                                        const pattern = r'^[0-9]+$';
-                                                                        final regex = RegExp(pattern);
-                                                                        if (controller
-                                                                            .withdrawController.text.isNotEmpty) {
-                                                                          amounts = int.parse(
-                                                                              controller.withdrawController.text);
-                                                                        }
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(vertical: h * 0.015),
+                                                  child: CommonContainer(
+                                                    height: h * 0.15,
+                                                    width: double.infinity,
+                                                    bottomChild:
+                                                        "${controller.getStaffDetailResModel.data?.earnings?.totalMoneyWithdraws ?? ''}",
+                                                    title: AppString.total,
+                                                    subTitle: AppString.moneyWithdraws,
+                                                    icon: Icons.book_online,
+                                                  ),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: CommonContainer(
+                                                        height: h * 0.15,
+                                                        width: double.infinity,
+                                                        bottomChild:
+                                                            "₹ ${controller.getStaffDetailResModel.data?.earnings?.totalPendingMoney ?? ''}",
+                                                        title: AppString.total,
+                                                        subTitle: AppString.pendingMoney,
+                                                        icon: Icons.monetization_on_outlined,
+                                                      ),
+                                                    ),
+                                                    (w * 0.03).addWSpace(),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: CommonContainer(
+                                                        height: h * 0.15,
+                                                        width: double.infinity,
+                                                        bottomChild:
+                                                            "${controller.getStaffDetailResModel.data?.earnings?.sentWithdrawRequest ?? ''}",
+                                                        title: AppString.withdraw,
+                                                        subTitle: AppString.requestSent,
+                                                        icon: Icons.check_circle_outline,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(vertical: h * 0.015),
+                                                  child: Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(horizontal: w * 0.03, vertical: h * 0.015),
+                                                    decoration: BoxDecoration(
+                                                        color: containerColor, borderRadius: BorderRadius.circular(20)),
+                                                    child: requestStatus == true
+                                                        ? Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  AppString.withdraw.regularLeagueSpartan(
+                                                                      fontSize: 14, fontColor: appColorBlue),
+                                                                  AppString.requestStatus.regularLeagueSpartan(
+                                                                      fontSize: 14, fontWeight: FontWeight.w600),
+                                                                ],
+                                                              ),
+                                                              (h * 0.01).addHSpace(),
+                                                              (controller.getStaffDetailResModel.data?.earnings
+                                                                          ?.withdrawRequestMessage ??
+                                                                      '')
+                                                                  .regularLeagueSpartan(
+                                                                      fontColor: greyFontColor,
+                                                                      fontSize: 11,
+                                                                      fontWeight: FontWeight.w400),
+                                                            ],
+                                                          )
+                                                        : Row(
+                                                            children: [
+                                                              Column(
+                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                children: [
+                                                                  Row(
+                                                                    children: [
+                                                                      AppString.withdraw.regularLeagueSpartan(
+                                                                          fontSize: 14, fontColor: appColorBlue),
+                                                                      AppString.requestStatus.regularLeagueSpartan(
+                                                                          fontSize: 14, fontWeight: FontWeight.w600),
+                                                                    ],
+                                                                  ),
+                                                                  (h * 0.01).addHSpace(),
+                                                                  (controller.getStaffDetailResModel.data?.earnings
+                                                                              ?.withdrawRequestMessage ??
+                                                                          '')
+                                                                      .regularLeagueSpartan(
+                                                                          fontColor: greyFontColor,
+                                                                          fontSize: 11,
+                                                                          fontWeight: FontWeight.w400),
+                                                                ],
+                                                              ),
+                                                              const Spacer(),
+                                                              Switch(
+                                                                activeColor: appColorGreen,
+                                                                inactiveTrackColor: textFieldBorderColor,
+                                                                thumbColor:
+                                                                    MaterialStateProperty.resolveWith((Set states) {
+                                                                  if (states.contains(MaterialState.disabled)) {
+                                                                    return containerColor.withOpacity(0.05);
+                                                                  }
+                                                                  return containerColor;
+                                                                }),
+                                                                value: requestStatus,
+                                                                onChanged: (value) {
+                                                                  /// Sent Withdraw Request API
+                                                                  if ((controller.getStaffDetailResModel.data?.earnings
+                                                                          ?.totalPendingMoney)! >
+                                                                      0) {
+                                                                    Get.dialog(
+                                                                      barrierDismissible: false,
+                                                                      AlertDialog(
+                                                                        insetPadding: EdgeInsets.symmetric(
+                                                                            horizontal: Get.width * 0.08),
+                                                                        contentPadding:
+                                                                            EdgeInsets.all(Get.width * 0.05),
+                                                                        shape: RoundedRectangleBorder(
+                                                                            borderRadius: BorderRadius.circular(10)),
+                                                                        content: Builder(
+                                                                          builder: (context) {
+                                                                            return Container(
+                                                                              padding: EdgeInsets.zero,
+                                                                              height: Get.height * 0.4,
+                                                                              width: Get.width * 0.9,
+                                                                              child: Form(
+                                                                                key: _formKey,
+                                                                                child: Column(
+                                                                                  children: [
+                                                                                    (Get.height * 0.03).addHSpace(),
+                                                                                    Row(
+                                                                                      mainAxisAlignment:
+                                                                                          MainAxisAlignment.center,
+                                                                                      children: [
+                                                                                        AppString.totalMoney
+                                                                                            .regularLeagueSpartan(
+                                                                                                fontColor: blackColor,
+                                                                                                fontSize: 18,
+                                                                                                fontWeight:
+                                                                                                    FontWeight.w700),
+                                                                                        " : ₹ ${controller.getStaffDetailResModel.data?.earnings?.totalPendingMoney ?? ''}"
+                                                                                            .regularLeagueSpartan(
+                                                                                                fontColor: blackColor,
+                                                                                                fontSize: 18,
+                                                                                                fontWeight:
+                                                                                                    FontWeight.w900),
+                                                                                      ],
+                                                                                    ),
+                                                                                    (Get.height * 0.05).addHSpace(),
+                                                                                    TextFormField(
+                                                                                      keyboardType:
+                                                                                          TextInputType.number,
+                                                                                      controller:
+                                                                                          controller.withdrawController,
+                                                                                      validator: (value) {
+                                                                                        const pattern = r'^[0-9]+$';
+                                                                                        final regex = RegExp(pattern);
+                                                                                        if (controller
+                                                                                            .withdrawController
+                                                                                            .text
+                                                                                            .isNotEmpty) {
+                                                                                          amounts = int.parse(controller
+                                                                                              .withdrawController.text);
+                                                                                        }
 
-                                                                        if (controller
-                                                                            .withdrawController.text.isEmpty) {
-                                                                          return "Please Enter Amount";
-                                                                        } else if (controller
-                                                                                    .getStaffDetailResModel
-                                                                                    .data!
-                                                                                    .earnings!
-                                                                                    .totalPendingMoney! <
-                                                                                amounts! ||
-                                                                            amounts! <= 0) {
-                                                                          return "Please Enter Valid Amount";
-                                                                        } else if (!regex.hasMatch(
-                                                                            controller.withdrawController.text)) {
-                                                                          return "Please Enter Valid Amount";
-                                                                        }
-                                                                        return null;
-                                                                      },
-                                                                      decoration: InputDecoration(
-                                                                        hintText: "Enter Amount",
-                                                                        hintStyle: TextStyle(
-                                                                            color: blackColor.withOpacity(0.5),
-                                                                            fontSize: 16,
-                                                                            fontWeight: FontWeight.w300,
-                                                                            fontFamily: 'League Spartan'),
-                                                                        border: OutlineInputBorder(
-                                                                          borderRadius: BorderRadius.circular(5),
-                                                                          borderSide:
-                                                                              const BorderSide(color: appBarColor),
+                                                                                        if (controller
+                                                                                            .withdrawController
+                                                                                            .text
+                                                                                            .isEmpty) {
+                                                                                          return "Please Enter Amount";
+                                                                                        } else if (controller
+                                                                                                    .getStaffDetailResModel
+                                                                                                    .data!
+                                                                                                    .earnings!
+                                                                                                    .totalPendingMoney! <
+                                                                                                amounts! ||
+                                                                                            amounts! <= 0) {
+                                                                                          return "Please Enter Valid Amount";
+                                                                                        } else if (!regex.hasMatch(
+                                                                                            controller
+                                                                                                .withdrawController
+                                                                                                .text)) {
+                                                                                          return "Please Enter Valid Amount";
+                                                                                        }
+                                                                                        return null;
+                                                                                      },
+                                                                                      decoration: InputDecoration(
+                                                                                        hintText: "Enter Amount",
+                                                                                        hintStyle: TextStyle(
+                                                                                            color: blackColor
+                                                                                                .withOpacity(0.5),
+                                                                                            fontSize: 16,
+                                                                                            fontWeight: FontWeight.w300,
+                                                                                            fontFamily:
+                                                                                                'League Spartan'),
+                                                                                        border: OutlineInputBorder(
+                                                                                          borderRadius:
+                                                                                              BorderRadius.circular(5),
+                                                                                          borderSide: const BorderSide(
+                                                                                              color: appBarColor),
+                                                                                        ),
+                                                                                      ),
+                                                                                    ),
+                                                                                    (Get.height * 0.1).addHSpace(),
+                                                                                    Row(
+                                                                                      children: [
+                                                                                        Expanded(
+                                                                                          flex: 1,
+                                                                                          child: AppButton(
+                                                                                            height: Get.height * 0.06,
+                                                                                            color: Colors.transparent,
+                                                                                            onTap: () {
+                                                                                              Get.back();
+                                                                                              controller
+                                                                                                  .withdrawController
+                                                                                                  .clear();
+                                                                                            },
+                                                                                            child: AppString.back
+                                                                                                .regularLeagueSpartan(
+                                                                                                    fontColor:
+                                                                                                        blackColor,
+                                                                                                    fontSize: 14,
+                                                                                                    fontWeight:
+                                                                                                        FontWeight
+                                                                                                            .w700),
+                                                                                          ),
+                                                                                        ),
+                                                                                        (Get.width * 0.02).addWSpace(),
+                                                                                        Expanded(
+                                                                                          flex: 1,
+                                                                                          child: AppButton(
+                                                                                            height: Get.height * 0.06,
+                                                                                            color: appColorBlue,
+                                                                                            onTap: () {
+                                                                                              if (_formKey.currentState!
+                                                                                                  .validate()) {
+                                                                                                ///  Post Withdraw Api
+                                                                                                homeController
+                                                                                                    .sendWithdrawRequest(
+                                                                                                        controller
+                                                                                                            .withdrawController
+                                                                                                            .text)
+                                                                                                    .then(
+                                                                                                        (result) async {
+                                                                                                  await homeController
+                                                                                                      .getStaffDetailApi();
+                                                                                                });
+                                                                                                Get.back();
+                                                                                                controller
+                                                                                                    .withdrawController
+                                                                                                    .clear();
+                                                                                              }
+                                                                                            },
+                                                                                            child: AppString.withdraw
+                                                                                                .regularLeagueSpartan(
+                                                                                                    fontSize: 14,
+                                                                                                    fontWeight:
+                                                                                                        FontWeight
+                                                                                                            .w700),
+                                                                                          ),
+                                                                                        )
+                                                                                      ],
+                                                                                    ),
+                                                                                  ],
+                                                                                ),
+                                                                              ),
+                                                                            );
+                                                                          },
                                                                         ),
                                                                       ),
-                                                                    ),
-                                                                    (Get.height * 0.1).addHSpace(),
-                                                                    Row(
-                                                                      children: [
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: AppButton(
-                                                                            height: Get.height * 0.06,
-                                                                            color: Colors.transparent,
-                                                                            onTap: () {
-                                                                              Get.back();
-                                                                              controller.withdrawController.clear();
-                                                                            },
-                                                                            child: AppString.back.regularLeagueSpartan(
-                                                                                fontColor: blackColor,
-                                                                                fontSize: 14,
-                                                                                fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        ),
-                                                                        (Get.width * 0.02).addWSpace(),
-                                                                        Expanded(
-                                                                          flex: 1,
-                                                                          child: AppButton(
-                                                                            height: Get.height * 0.06,
-                                                                            color: appColorBlue,
-                                                                            onTap: () {
-                                                                              if (_formKey.currentState!.validate()) {
-                                                                                ///  Post Withdraw Api
-                                                                                homeController.sendWithdrawRequest(
-                                                                                    controller.withdrawController.text);
-                                                                                Get.back();
-                                                                                controller.withdrawController.clear();
-                                                                              }
-                                                                            },
-                                                                            child: AppString.withdraw
-                                                                                .regularLeagueSpartan(
-                                                                                    fontSize: 14,
-                                                                                    fontWeight: FontWeight.w700),
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  ],
-                                                                ),
+                                                                    );
+                                                                  } else {
+                                                                    showAppSnackBar("No Wallet Amount!");
+                                                                  }
+                                                                },
                                                               ),
-                                                            );
-                                                          },
-                                                        ),
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    log("Already request sent");
-                                                    snack(false);
-                                                  }
-                                                } else {
-                                                  log("No Current Earning");
-                                                  snack(true);
-                                                }
-                                              },
+                                                            ],
+                                                          ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
-                                          ],
+                                          ),
                                         ),
+                                      )
+                                    : StaffErrorScreen(
+                                        isLoading: controller.isLoading,
+                                        onTap: () {
+                                          if (networkController.isResult == false) {
+                                            WidgetsBinding.instance.addPostFrameCallback((_) async {
+                                              await controller.getStaffDetailApi();
+                                            });
+                                          }
+                                        },
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        : StaffErrorScreen(
-                            isLoading: controller.isLoading,
-                            onTap: () {
-                              if (networkController.isResult == false) {
-                                WidgetsBinding.instance.addPostFrameCallback((_) async {
-                                  await controller.getStaffDetailApi();
-                                });
-
-                                // timer1 = Timer.periodic(const Duration(seconds: 5), (timer) {
-                                //   if (controller.getStaffDetailResModel.data?.activeStatus != null) {
-                                //     log("controller.getStaffDetailResModel.data?.activeStatus    ${controller.getStaffDetailResModel.data?.activeStatus}");
-                                //     if (controller.getStaffDetailResModel.data?.activeStatus == AppString.offline) {
-                                //       log("=====ACTIVE_STATUS_UPDATED");
-                                //       controller.activeStatusApi(AppString.online);
-                                //       setState(() {
-                                //         timer1?.cancel();
-                                //       });
-                                //     } else {
-                                //       log("=====ACTIVE_STATUS_ALREADY_UPDATED");
-                                //     }
-                                //   }
-                                // });
-                              }
-                            },
                           ),
+                        ),
+                        controller.logOutLoading == true
+                            ? Container(
+                                height: h,
+                                width: w,
+                                color: Colors.black26,
+                                child: const Center(child: CircularProgressIndicator(color: Colors.white)),
+                              )
+                            : const SizedBox()
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           },
@@ -571,18 +638,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                                       color: Colors.transparent,
                                                                       onTap: () {
                                                                         Get.back();
-                                                                        homeController
-                                                                            .activeStatusApi(AppString.offline)
-                                                                            .then((result) {
-                                                                          WidgetsBinding.instance
-                                                                              .addPostFrameCallback((_) async {
-                                                                            await homeController
-                                                                                .logOut(PreferenceManager()
-                                                                                    .getNumber()
-                                                                                    .toString())
-                                                                                .then((result1) {
-                                                                              PreferenceManager().setClearALlPref();
-                                                                            });
+                                                                        WidgetsBinding.instance
+                                                                            .addPostFrameCallback((_) async {
+                                                                          await homeController
+                                                                              .logOut(PreferenceManager()
+                                                                                  .getNumber()
+                                                                                  .toString())
+                                                                              .then((result1) {
+                                                                            PreferenceManager().setClearALlPref();
                                                                           });
                                                                         });
                                                                         setState(() {});
@@ -700,16 +763,5 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         ),
       ),
     );
-  }
-
-  void snack(bool earning) {
-    if (tap % 5 == 0) {
-      if (earning == true) {
-        showAppSnackBar(AppString.noCurrentEarning);
-      } else {
-        showAppSnackBar(AppString.youHaveAlreadySentWithdrawRequest);
-      }
-    }
-    tap++;
   }
 }

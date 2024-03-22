@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:talkangels/api/repo/auth_repo.dart';
@@ -9,6 +7,7 @@ import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/models/angle_call_res_model.dart';
 import 'package:talkangels/socket/socket_service.dart';
 import 'package:talkangels/theme/app_layout.dart';
+import 'package:talkangels/ui/angels/constant/app_string.dart';
 import 'package:talkangels/ui/angels/models/add_rating_res_model.dart';
 import 'package:talkangels/ui/angels/models/add_wallet_ballence_res_model.dart';
 import 'package:talkangels/ui/angels/models/angle_list_res_model.dart';
@@ -17,7 +16,7 @@ import 'package:talkangels/ui/angels/models/delete_user_res_model.dart';
 import 'package:talkangels/ui/angels/models/user_details_res_model.dart';
 import 'package:talkangels/ui/angels/main/home_pages/calling_screen_controller.dart';
 import 'package:talkangels/const/app_routes.dart';
-import 'package:talkangels/ui/angels/widgets/app_dialogbox.dart';
+import 'package:talkangels/common/app_dialogbox.dart';
 import 'package:talkangels/controller/log_out_res_model.dart';
 
 class HomeScreenController extends GetxController {
@@ -75,11 +74,12 @@ class HomeScreenController extends GetxController {
         resModel.data!.forEach((element) {
           angleAllData.add(element);
         });
+        anglesFilterData();
 
         isLoading = false;
         update();
       } catch (e) {
-        log("e========error=======>$e");
+        // log("e========error=======>$e");
         isLoading = false;
         update();
       }
@@ -103,18 +103,46 @@ class HomeScreenController extends GetxController {
 
   getSocketAllAngleOn() {
     SocketConnection.socket!.on("getAllAngels", (data) {
-      log('updateAllAngels>>> ${data.runtimeType}');
-      log('updateAllAngels>>> ${data}');
       angleAllData.clear();
 
       update();
       GetAngleListResModel resModel = GetAngleListResModel.fromJson(data);
       resModel.data!.forEach((element) {
         angleAllData.add(element);
+        anglesFilterData();
       });
       update();
-      log('GetAngleListResModel>>> ${resModel.data!.length}');
     });
+  }
+
+  List<AngleData> angelsAvailableList = [];
+  List<AngleData> angelsBusyList = [];
+  List<AngleData> angelsNotAvailableList = [];
+  List<AngleData> allAngelsListData = [];
+
+  anglesFilterData() {
+    angelsAvailableList = [];
+    angelsBusyList = [];
+    angelsNotAvailableList = [];
+    allAngelsListData = [];
+
+    angleAllData.forEach((element) {
+      if (element.callStatus == AppString.available) {
+        angelsAvailableList.add(element);
+        update();
+      } else if (element.callStatus == AppString.busy) {
+        angelsBusyList.add(element);
+        update();
+      } else {
+        angelsNotAvailableList.add(element);
+        update();
+      }
+    });
+
+    allAngelsListData = angelsAvailableList + angelsBusyList + angelsNotAvailableList;
+    update();
+
+    return allAngelsListData;
   }
 
   searchData(String text) {
@@ -127,21 +155,16 @@ class HomeScreenController extends GetxController {
         }
       });
     }
-    log('==============SEARCH_ANGELS_LIST====>>>>>>>>${searchAngelsList}');
   }
 
   angleCallingApi(String angleId, String userId) async {
     isCallLoading = true;
     update();
-    log("angleId---------->$angleId");
     ResponseItem item = await HomeRepoAngels.callApi(angleId, userId);
     // log("item---------->${item.data}");
     if (item.status == true) {
       try {
         angleCallResModel = AngleCallResModel.fromJson(item.data);
-        log("angleCallResModel---->${angleCallResModel.data!.agoraInfo!.token}");
-        log("angleCallResModel---->${selectedAngle!.id}");
-
         Get.toNamed(Routes.callingScreen, arguments: {
           "selectedAngle": selectedAngle,
           "angleCallResModel": angleCallResModel,
@@ -150,7 +173,7 @@ class HomeScreenController extends GetxController {
         isCallLoading = false;
         update();
       } catch (e) {
-        log("e----->$e");
+        // log("e----->$e");
         isCallLoading = false;
         update();
       }
@@ -185,7 +208,7 @@ class HomeScreenController extends GetxController {
         isUserLoading = false;
         update();
       } catch (e) {
-        log("e===============>$e");
+        // log("e===============>$e");
         isUserLoading = false;
         update();
       }
@@ -208,7 +231,7 @@ class HomeScreenController extends GetxController {
         Get.offAllNamed(Routes.loginScreen);
         update();
       } catch (e) {
-        log("e===============>$e");
+        // log("e===============>$e");
         isDelete = false;
         update();
       }
@@ -232,7 +255,7 @@ class HomeScreenController extends GetxController {
         isRatingLoading = false;
         update();
       } catch (e) {
-        log("e----------   $e");
+        // log("e----------   $e");
         isRatingLoading = false;
         update();
       }
@@ -256,7 +279,7 @@ class HomeScreenController extends GetxController {
         isAmountLoading = false;
         update();
       } catch (e) {
-        log("e----->$e");
+        // log("e----->$e");
         isAmountLoading = false;
         update();
       }
@@ -273,14 +296,14 @@ class HomeScreenController extends GetxController {
     update();
 
     ResponseItem item = await AuthRepo.logOut(mobileNumber);
-    log("item---4------->${item.data}");
+    // log("item---4------->${item.data}");
     if (item.status == true) {
       try {
         logOutResModel = LogOutResModel.fromJson(item.data);
         logOutLoading = false;
         update();
       } catch (e) {
-        log("e=======logOut=======>$e");
+        // log("e=======logOut=======>$e");
         logOutLoading = false;
         update();
       }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_color.dart';
 
 extension SizedExtension on double {
   addHSpace() {

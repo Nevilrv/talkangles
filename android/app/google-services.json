@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:177121771573:android:31c4557bcb048779a3317c",
+        "mobilesdk_app_id": "1:177121771573:android:99f0dabcdd2368d9a3317c",
         "android_client_info": {
-          "package_name": "com.example.talkangels"
+          "package_name": "com.talkangels.talkangels"
         }
       },
       "oauth_client": [],

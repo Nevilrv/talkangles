@@ -9,8 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:talkangels/const/shared_prefs.dart';
 import 'package:talkangels/theme/app_layout.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
-
-import '../ui/staff/models/update_staff_details_res_model.dart';
+import 'package:talkangels/ui/staff/main/home_pages/home_controller.dart';
 
 /// Angels
 class BaseApiHelper {
@@ -82,14 +81,16 @@ class BaseApiHelper {
 
   /// Put Staff Details API
   static Future<dynamic> putStaffDetails({
-    File? image,
+    String? image,
     String? userName,
     String? name,
     String? gender,
     String? bio,
     String? language,
     String? age,
+    String? fileType,
   }) async {
+    HomeController homeController = Get.put(HomeController());
     String userId = PreferenceManager().getId().toString();
     String requestUrl = AppUrls.BASE_URL + MethodNamesStaff.updateStaffDetails + userId;
 
@@ -103,18 +104,33 @@ class BaseApiHelper {
     data['language'] = "$language";
     data['age'] = "$age";
 
-    var headers = {'Authorization': PreferenceManager().getToken().toString()};
-    log("data-------------->${data}");
+    var headers = {
+      'Authorization': PreferenceManager().getToken().toString(),
+    };
 
-    request.fields.addAll(data);
-    request.files.add(await http.MultipartFile.fromPath('image', '${image?.path}'));
+    log("data-------------->${data}");
+    if (data.isNotEmpty) {
+      request.fields.addAll(data);
+    }
+
+    if (image != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        image.toString(),
+      ));
+    }
+
     request.headers.addAll(headers);
 
     http.StreamedResponse response = await request.send();
+    log("response___________${response.stream}");
+    log("response.statusCode___________${response.statusCode}");
+    log("response.reasonPhrase___________${response.reasonPhrase}");
     var res;
     if (response.statusCode == 200) {
       res = jsonDecode(await response.stream.bytesToString());
-      // log("response-----------${await response.stream.bytesToString()}");
+      Get.back();
+      await homeController.getStaffDetailApi();
     } else {
       log("err-------------${response.reasonPhrase}");
     }
@@ -145,8 +161,6 @@ class BaseApiHelper {
       print("MESSAGE___401 ${result.message}");
     } else if (response.statusCode == 404) {
       result.message = data["message"] ?? "";
-
-      // showAppSnackBar(result.message.toString());
       print("MESSAGE___404 ${result.message}");
     } else if (response.statusCode == 500) {
       result.message = data["message"] ?? "";

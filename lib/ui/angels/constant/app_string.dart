@@ -1,7 +1,6 @@
 class AppString {
   static const talkAngels = "TALK ANGELS";
   static const online = "Online";
-  static const offline = "Offline";
   static const somethingWentWrong = "Something Went Wrong";
   static const loginSuccessfully = "Login Successfully";
   static const pleaseInstallTheWhatsapp = "Please install the whatsapp";
@@ -10,6 +9,7 @@ class AppString {
   static const talkToPeopleWithSimilar = "Talk to people with similar";
   static const experiences = "EXPERIENCES";
   static const whatsappInstantLogin = "Whatsapp Instant login";
+  static const login = "Login";
   static const haveA = "Have a ";
   static const referralCode_ = "referral code?";
   static const byClickingIAcceptThe = "By clicking I accept the ";
@@ -22,7 +22,6 @@ class AppString {
       "Hey there! Happy to see you! Did a friend\ntell you about us? Pop in the code they\ngave you, and both of you get cool\nrewards. Don't wait—type in the\nREFERRAL CODE now!";
   static const enterReferralCodeHere = "Enter referral code here";
   static const go = "Go";
-  static const heyTalkAngle = "Hey, TalkAngel";
   static const logOut = "Log Out";
   static const cancel = "Cancel";
   static const myProfile = "My Profile";
@@ -32,7 +31,6 @@ class AppString {
   static const deleteAccount = "Delete Account";
   static const searchTalkAngelHere = "Search TalkAngel here";
   static const talkNow = "Talk Now";
-  static const callNow = "Call Now";
   static const personDetails = "Person Details";
   static const language = "Language";
   static const aboutMe = "About Me";
@@ -49,9 +47,7 @@ class AppString {
   static const talkAngelWallet = "TalkAngel Wallet";
   static const enterAmount = "Enter Amount";
   static const proceed = "Proceed";
-  static const success = "Success!";
   static const enterYourProblem = "Enter Your Problem";
-
   static const yourSelectedTalktimeRechargeIsDoneSuccessfullyContinueUsingyourFavouriteAppHaveaNiceDay =
       "Your selected Talktime recharge is done successfully! Continue using your favourite app. Have a Nice Day!";
   static const amountSuccessfullyAddedInWalletContinueUsingYourFavouriteAppHaveANiceDay =
@@ -92,8 +88,6 @@ class AppString {
   static const accessingYourAccountHoldTight = "Accessing your account, hold tight...";
   static const calling = "Calling...";
   static const mute = "Mute";
-  static const bluetooth = "Bluetooth";
-  static const hold = "Hold";
   static const paymentFaild = "Payment Faild";
   static const pleaseRatingThisCall = "Please Rating This Call";
   static const submit = "Submit";
@@ -107,29 +101,23 @@ class AppString {
   static const gender = "Gender";
   static const age = "Age";
   static const yrsOld = "Yrs Old";
-  static const rating = "4.9";
   static const totalReviews = "Total Reviews";
   static const reviews = "Reviews";
-  static const comment = "Comments";
   static const noComment = "No Comments";
   static const pleaseEnterValidNumbers = "Please Enter Valid Numbers";
   static const pleaseEnterValidAmount = "Please Enter Valid Amount";
   static const speaker = "Speaker";
-  static const serverError = "Server Error";
   static const noInternetConnection = "No Internet Connection";
   static const refresh = "Refresh";
-  static const checkYourConnectionThenRefreshThePage = "Check Your Connection Then Refresh The Page";
-  static const successfullyAddedWalletAmount = "Successfully Added Wallet Amount";
   static const pleaseTryAgainLater = "Please Try Again Later";
   static const pleaseEnterReferralCode = "Please Enter Referral Code";
   static const serverErrorPleaseTryAgainLater = "Server Error!  Please Try Again Later";
   static const pleaseFilledRequireFields = "Please Filled Require Fields";
   static const listing = "Listing";
-  static const angelNotFound = "Angel Not Found!";
   static const available = "Available";
   static const busy = "Busy";
-  static const notAvailable = "NotAvailable";
-  static const notAvailableSpec = "Not Available";
   static const yourWalletAmountIsExisted = "Your Wallet Amount is Existed";
   static const insufficientBalancePleaseRechargeYourAccount = "Insufficient balance. Please recharge your account.";
+  static const staff = "staff";
+  static const user = "user";
 }

@@ -1,15 +1,12 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:talkangels/api/api_helper.dart';
 import 'package:talkangels/api/repo/auth_repo.dart';
 import 'package:talkangels/api/repo/home_repo.dart';
 import 'package:talkangels/const/app_routes.dart';
 import 'package:talkangels/models/reject_call_res_model.dart';
 import 'package:talkangels/models/response_item.dart';
-import 'package:talkangels/theme/app_layout.dart';
 import 'package:talkangels/ui/staff/models/active_status_res_model.dart';
 import 'package:talkangels/ui/staff/models/add_call_history_res_model.dart';
 import 'package:talkangels/ui/staff/models/call_status_update_res_model.dart';
@@ -95,9 +92,6 @@ class HomeController extends GetxController {
       try {
         sendWithdrawReqResModel = SendWithdrawReqResModel.fromJson(result.data);
 
-        /// get Staff details api
-        await getStaffDetailApi();
-
         isRequestLoading = false;
         update();
       } catch (e) {
@@ -121,9 +115,6 @@ class HomeController extends GetxController {
     if (item.status == true) {
       try {
         activeStatusResModel = ActiveStatusResModel.fromJson(item.data);
-
-        /// Get Angel Details API
-        // await getStaffDetailApi();
 
         isStatusLoading = false;
         update();
@@ -149,13 +140,6 @@ class HomeController extends GetxController {
     if (item.status == true) {
       try {
         addCallHistoryResModel = AddCallHistoryResModel.fromJson(item.data);
-
-        /// Get Angel Details API
-        // if (int.parse(minutes) < 10) {
-        //   WidgetsBinding.instance.addPostFrameCallback((_) async {
-        //     await getStaffDetailApi();
-        //   });
-        // }
 
         isAddHistoryLoading = false;
         update();
@@ -220,10 +204,18 @@ class HomeController extends GetxController {
   /// Post Update Staff Details
 
   updateStaffDetails(
-      {String? userName, String? name, String? gender, String? bio, String? language, String? age, File? image}) async {
+      {String? userName,
+      String? name,
+      String? gender,
+      String? bio,
+      String? language,
+      String? age,
+      String? image,
+      String? fileType}) async {
     updateStaffDetailsLoading = true;
     update();
 
+    log("image______________${image}");
     UpdateStaffDetailResModel? result = await HomeRepoStaff.updateStaffDetails(
       age: age,
       language: language,
@@ -232,6 +224,7 @@ class HomeController extends GetxController {
       userName: userName,
       image: image,
       gender: gender,
+      fileType: fileType,
     );
     log("result---updateStaffDetails-------> ${result!.data}");
 
@@ -240,10 +233,6 @@ class HomeController extends GetxController {
         // updateStaffDetailResModel = UpdateStaffDetailResModel.fromJson(result.data);
         // log("RESULT>DATA---------${result.data}");
 
-        /// get Staff details api
-        await getStaffDetailApi();
-        Get.back();
-        showAppSnackBar("Profile Update Successfully");
         updateStaffDetailsLoading = false;
         update();
       } catch (e) {

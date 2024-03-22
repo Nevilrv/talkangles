@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:ffi';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
@@ -11,10 +10,8 @@ import 'package:get/get.dart';
 import 'package:talkangels/const/app_routes.dart';
 import 'package:talkangels/const/shared_prefs.dart';
 import 'package:talkangels/ui/angels/main/home_pages/calling_screen_controller.dart';
-import 'package:talkangels/ui/angels/main/home_pages/home_screen.dart';
-import 'package:talkangels/ui/angels/main/home_pages/person_details_screen.dart';
+import 'package:talkangels/const/app_assets.dart';
 import 'package:talkangels/ui/staff/constant/app_string.dart';
-import 'package:talkangels/ui/staff/main/call_history_pages/call_history_screen.dart';
 import 'package:talkangels/ui/staff/main/home_pages/home_controller.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,9 +24,9 @@ class NotificationService {
     'high_importance_channel', // id
     'High Importance Notifications', // title
     // 'This channel is used for important notifications.', // description
-    importance: Importance.max,
+    importance: Importance.high,
     playSound: true,
-    sound: RawResourceAndroidNotificationSound('assets/sound/audio_dummy.wav'),
+    sound: RawResourceAndroidNotificationSound(AppAssets.notificationSound),
   );
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
@@ -56,31 +53,27 @@ class NotificationService {
   static void showMsgHandler() {
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) async {
       RemoteNotification? notification = message!.notification;
-      log('message------------->${message}');
       log('message---data---------->${message.data}');
-      log('message---notification---------->${message.notification?.body}');
-      log('message---messageId---------->${message.messageId}');
-      log('message---messageType---------->${message.messageType}');
-
-      log('notification------------->${notification}');
-      log('notification---title---------->${notification?.title}');
-      log('notification---body---------->${notification?.body}');
+      print('notification------------->$notification');
+      print('notification---title---------->${notification?.title}');
+      print('notification---body---------->${notification?.body}');
 
       if (message != null) {
-        showMsg(notification!);
+        showMsg(message);
       }
-      // onMsgOpen();
+      // showMsg(message);
+
+      log("message.data['type']--------------> ${message.data['call_type']}");
 
       if (message.data['call_type'] == "reject") {
         if (PreferenceManager().getRole() == 'staff') {
-          print('call end--------------staff');
+          print('calling--------------staff');
           await FlutterCallkitIncoming.endAllCalls();
         } else {
+          print('call end--------------user');
           CallingScreenController callingScreenController = Get.put(CallingScreenController());
-          log('call end--------------angle');
           callingScreenController.leaveChannel(isRejected: true);
           Get.back();
-          log("REJECT_CALL___8888888");
         }
       } else if (message.data['call_type'] == "calling") {
         print('calling--------------staff');
@@ -89,18 +82,21 @@ class NotificationService {
         FlutterCallkitIncoming.endAllCalls();
         callHandle(message);
         showCallkitIncoming(const Uuid().v4(), message);
+      } else if (message.data['type'] == "Message" ||
+          message.data['type'] == "Other" ||
+          message.data['type'] == "Offer") {
+        // showMsg(message);
       }
     });
   }
 
   static callHandle(RemoteMessage message) {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
-      print("EVENT__callHandle_______  ${event}");
+      print("EVENT__callHandle_______  $event");
 
       switch (event!.event) {
         case Event.ACTION_CALL_INCOMING:
           print("actionCallIncoming----?}_callHandle");
-
           await homeController.updateCallStatus(AppString.busy);
           print("updateCallStatus(AppString.busy)----11?}");
           // TODO: received an incoming call
@@ -120,37 +116,14 @@ class NotificationService {
           // TODO: show screen calling in Flutter
           break;
         case Event.ACTION_CALL_DECLINE:
-          log("PreferenceManager().getRejectCall()_________${PreferenceManager().getRejectCall()}");
-          PreferenceManager().setRejectCall(true);
-          log("PreferenceManager().getRejectCall()_________${PreferenceManager().getRejectCall()}");
+          await homeController.updateCallStatus(AppString.available);
 
-          // if (PreferenceManager().getRejectCall() == true) {
-          //   print(
-          //       "Notification_Service-callHandle----rejectCall : ${PreferenceManager().getId()}, ${message.data['_id']}, user}");
-          //   await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'user');
-          //   await homeController.updateCallStatus(AppString.available);
-          //   print("updateCallStatus(AppString.available)----1111?}");
-          //   print(
-          //       "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
-          //   await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
-          //   await FlutterCallkitIncoming.endAllCalls();
-          //   print("actionCallDecline----?}");
-          // } else {
-          //   log("PreferenceManager().getRejectCall()______FALSE");
-          // }
-
-          onRejected(message);
-
-          // print(
-          //     "Notification_Service-callHandle----rejectCall : ${PreferenceManager().getId()}, ${message.data['_id']}, user}");
-          // await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'user');
-          // await homeController.updateCallStatus(AppString.available);
-          // print("updateCallStatus(AppString.available)----1111?}");
-          // print(
-          //     "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
-          // await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
-          // await FlutterCallkitIncoming.endAllCalls();
-          // print("actionCallDecline----?}");
+          print(
+              "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
+          await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
+          await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'staff');
+          await FlutterCallkitIncoming.endAllCalls();
+          print("actionCallDecline----?}");
           // TODO: declined an incoming call
           break;
         case Event.ACTION_CALL_ENDED:
@@ -158,16 +131,14 @@ class NotificationService {
           // TODO: ended an incoming/outgoing call
           break;
         case Event.ACTION_CALL_TIMEOUT:
-          print("actionCallTimeout----?}");
-          print(
-              "Notification_Service-callHandle---rejectCall : ${PreferenceManager().getId()}, ${message.data['_id']}, staff");
-          await homeController.rejectCall(PreferenceManager().getId().toString(), message.data['_id'], 'staff');
           await homeController.updateCallStatus(AppString.available);
-          print("updateCallStatus(AppString.available)----2222?}");
+
           print(
               "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
           await homeController.addCallHistory(
               message.data['_id'], PreferenceManager().getId().toString(), 'reject', '0');
+          await homeController.rejectCall(PreferenceManager().getId().toString(), message.data['_id'], 'staff');
+
           await FlutterCallkitIncoming.endAllCalls();
           // TODO: missed an incoming call
           break;
@@ -198,7 +169,7 @@ class NotificationService {
 
   static callHandle1(RemoteMessage message) {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
-      print("EVENT__callHandle1_______  ${event}");
+      print("EVENT__callHandle1_______  $event");
       switch (event!.event) {
         case Event.ACTION_CALL_INCOMING:
           print("actionCallIncoming----?}_callHandle1");
@@ -213,10 +184,8 @@ class NotificationService {
                 } else {
                   await homeController.activeStatusApi(AppString.online).then((result1) async {
                     print("RESULT1___$result1");
-                    // Future.delayed(const Duration(seconds: 1), () async {
                     await homeController.updateCallStatus(AppString.busy);
                     print("updateCallStatus(AppString.busy)----33?}");
-                    // });
                   });
                 }
               });
@@ -226,11 +195,9 @@ class NotificationService {
                 print("updateCallStatus(AppString.busy)----44?}");
               } else {
                 await homeController.activeStatusApi(AppString.online).then((result1) async {
-                  print("RESULT1___${result1}");
-                  // Future.delayed(const Duration(seconds: 1), () async {
+                  print("RESULT1___$result1");
                   await homeController.updateCallStatus(AppString.busy);
                   print("updateCallStatus(AppString.busy)----55?}");
-                  // });
                 });
               }
             }
@@ -248,8 +215,8 @@ class NotificationService {
           break;
         case Event.ACTION_CALL_ACCEPT:
           print("actionCallAccept----?}_callHandle1");
-          PreferenceManager().setSetScreen(true);
-          print("PreferenceManager-------------->_callHandle1 ${PreferenceManager().getScreen()}");
+          await PreferenceManager().setSetScreen(true);
+          log("PreferenceManager-------------->_callHandle1 ${PreferenceManager().getScreen()}");
 
           // TODO: accepted an incoming call
           // TODO: show screen calling in Flutter
@@ -265,7 +232,7 @@ class NotificationService {
 
           await homeController.updateCallStatus(AppString.available).then((result111) async {
             print("updateCallStatus(AppString.available)----3333?}");
-            print("RESULT111==___${result111}");
+            print("RESULT111==___$result111");
             await homeController.activeStatusApi(AppString.offline);
           });
 
@@ -287,7 +254,7 @@ class NotificationService {
 
           await homeController.updateCallStatus(AppString.available).then((result1) async {
             print("updateCallStatus(AppString.available)----7777?}");
-            print("RESULT1!!!___${result1}");
+            print("RESULT1!!!___$result1");
             await homeController.activeStatusApi(AppString.offline);
           });
 
@@ -322,30 +289,6 @@ class NotificationService {
     });
   }
 
-  static onRejected(RemoteMessage message) {
-    if (PreferenceManager().getRejectCall() == true) {
-      log("ON_REJECT___TRUE__${PreferenceManager().getRejectCall()}");
-      callDecline(message);
-      PreferenceManager().setRejectCall(false);
-      log("ON_REJECT___TRUE__AFTER__${PreferenceManager().getRejectCall()}");
-    } else {
-      log("ON_REJECT___FALSE__${PreferenceManager().getRejectCall()}");
-    }
-  }
-
-  static Future<void> callDecline(RemoteMessage message) async {
-    print(
-        "Notification_Service-callHandle----rejectCall : ${PreferenceManager().getId()}, ${message.data['_id']}, staff}");
-    await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'staff');
-    await homeController.updateCallStatus(AppString.available);
-    print("updateCallStatus(AppString.available)----1111?}");
-    print(
-        "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
-    await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
-    await FlutterCallkitIncoming.endAllCalls();
-    print("actionCallDecline----?}");
-  }
-
   static Future<void> showCallkitIncoming(String uuid, RemoteMessage message) async {
     var callData = message.data;
     print("callData---messageType> ${message.messageType}");
@@ -354,7 +297,7 @@ class NotificationService {
     print("callData---category> ${message.category}");
     print("callData---data> ${message.data}");
 
-    print("callData---1->${callData}");
+    print("callData---1->$callData");
     print("callData---2->${message.messageType}");
     print("callData---3->${message.notification}");
 
@@ -362,7 +305,7 @@ class NotificationService {
       id: uuid,
       nameCaller: callData['user_name'],
       appName: 'Angel',
-      avatar: 'assets/images/blank_image.jpg',
+      avatar: AppAssets.blankProfile,
       handle: 'Incoming Audio Call...',
       type: 0,
       duration: 30000,
@@ -377,7 +320,7 @@ class NotificationService {
         backgroundColor: '#28274C',
         backgroundUrl: 'assets/test.png',
         actionColor: '#4CAF50',
-        isShowMissedCallNotification: false,
+        // isShowMissedCallNotification: false,
       ),
       ios: IOSParams(
         iconName: 'CallKitLogo',
@@ -401,11 +344,10 @@ class NotificationService {
   }
 
   /// handle notification when app in fore ground..///close app
-  static void getInitialMsg() {
+  static getInitialMsg() {
     FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) async {
-      print("Initial Message 11 :::::::::::: ${message}");
+      print("Initial Message 11 :::::::::::: $message");
       print("Initial Message 22 :::::::::::: ${message?.data}");
-      // var currentCall = await getCurrentCall();
       checkAndNavigationCallingPage();
       if (message != null) {
         // if (message.data['call_type'] == "calling") {
@@ -446,18 +388,9 @@ class NotificationService {
   }
 
   static Future<dynamic> getCurrentCall() async {
-    //check current call from pushkit if possible
     var calls = await FlutterCallkitIncoming.activeCalls();
     if (calls is List) {
       if (calls.isNotEmpty) {
-        // print('DATA::n::   ${calls[0]['n']}');
-        // print('DATA::extra::   ${calls[0]['extra']}');
-        //
-        // if (calls[0]['n'] == null) {
-        //   print("currentCall[0]['extra']['message']--------------> ${calls[0]['extra']['message']}");
-        // } else {
-        //   print("currentCall[0]['n']['message']--------------> ${calls[0]['n']['message']}");
-        // }
         return calls[0];
       } else {
         return null;
@@ -465,55 +398,25 @@ class NotificationService {
     }
   }
 
-  //calling
-  var data = {
-    "image": 0,
-    "user_name": "460355",
-    "agora_token":
-        "007eJxTYMg91br3afSimc+vlp+KmnSLt3gKl7enx1UH9UkCRX0xr0wUGAyS0tKSk4yTLM3T0kzSTC2S0gxSzJMTLVIsjZLMkkxTKozvpHY43knlmMbDyMjAyMDCwMgAAkxgkhlMsoBJJQYHx7z01Jx438TSnMzseENzAwtLI0tLQyMzA5N4EzMDY1NTBgYAYQkokQ==",
-    "name": "Test22",
-    "channelName": "@Angel_Maulik_1708929912604_460355",
-    "_id": "65b2246de76ff6572631f384",
-    "agora_app_id": "0bffcb3b97ff4f58bf0d7ca8d92b6b5d",
-    "mobile_number": "1111111111",
-    "call_type": "calling",
-  };
-
-  //profile
-  /// type: "message",
-  /// "angel_id": "65b2246de76ff6572631f384",
-
   ///show notification msg
-  static void showMsg(RemoteNotification notification) {
-    print("notification.body ${notification.body}");
-    print("notification.title ${notification.title}");
-    print("notification.android ${notification.android}");
-    print("notification.apple ${notification.apple}");
-    print("notification.bodyLocArgs ${notification.bodyLocArgs}");
-    print("notification.bodyLocKey ${notification.bodyLocKey}");
-    print("notification.titleLocArgs ${notification.titleLocArgs}");
-    print("notification.titleLocKey ${notification.titleLocKey}");
-    print("notification.web ${notification.web}");
+  static void showMsg(RemoteMessage? message) {
+    print("message?.data====>>> ${message?.data}");
 
     flutterLocalNotificationsPlugin.show(
-      notification.hashCode,
-      '${notification.title}',
-      // Missed Call
-      // Incoming call
-      '${notification.body}',
+      message!.notification.hashCode,
+      '${message.notification?.title}',
+      '${message.notification?.body}',
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'high_importance_channel', // id
           'High Importance Notifications', // title
-          //'This channel is used for important notifications.',
-          // description
           importance: Importance.high,
           priority: Priority.max,
           icon: '@mipmap/ic_launcher',
         ),
         // iOS: DarwinNotificationDetails(),
       ),
-      payload: notification.title,
+      payload: jsonEncode(message.data),
     );
   }
 
@@ -523,40 +426,16 @@ class NotificationService {
       log('A new onMessageOpenedApp event was published!');
       log('listen-> ${message.data}');
 
-      // try {
-      //   if (PreferenceManager().getRole().toString() == AppString.staff) {
-      //     Get.to(const CallHistoryScreen());
-      //   } else {
-      //     // Get.to(const HomeScreen());
-      //     // Get.toNamed(Routes.personDetailScreen, arguments: {
-      //     //   "angel_id": "65dd6cb6a84d73f6af596bf6",
-      //     // });
-      //     log("ANGEL_ID__${message.data["angel_id"]}");
-      //     log("ID__${message.data["_id"]}");
-      //
-      //     ///type: "message",
-      //     if (message.data["angel_id"] != null || message.data["angel_id"] != '') {
-      //       log("message.data____message__${message.data["angel_id"]}");
-      //       Get.toNamed(Routes.personDetailScreen, arguments: {
-      //         "angel_id": "${message.data["angel_id"]}",
-      //       });
-      //     } else if (message.data["_id"] != null || message.data["_id"] != '') {
-      //       log("message.data____id__${message.data["_id"]}");
-      //       Get.toNamed(Routes.personDetailScreen, arguments: {
-      //         "angel_id": "${message.data["_id"]}",
-      //       });
-      //     } else {
-      //       log("message.data____else");
-      //       Get.toNamed(Routes.homeScreen);
-      //     }
-      //   }
-      // } catch (e) {
-      //   log("ee--------------> ${e}");
-      // }
-
-      // showMsg(message.notification!);
-      // callHandle(message);
-      // showCallkitIncoming( Uuid().v4(),message);
+      if (message.data['type'] == "Message" || message.data['type'] == "Offer" || message.data['type'] == "Other") {
+        log("d--------------> ${message.data['type']}");
+        log("angel_id--------------> ${message.data['angel_id']}");
+        var angleId = message.data['angel_id'] ?? "";
+        if (angleId != "") {
+          Get.toNamed(Routes.personDetailScreen, arguments: {
+            "angel_id": angleId,
+          });
+        }
+      }
     });
   }
 }

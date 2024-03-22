@@ -1,10 +1,8 @@
 import 'dart:convert';
 
-AddCallHistoryResModel addCallHistoryResModelFromJson(String str) =>
-    AddCallHistoryResModel.fromJson(json.decode(str));
+AddCallHistoryResModel addCallHistoryResModelFromJson(String str) => AddCallHistoryResModel.fromJson(json.decode(str));
 
-String addCallHistoryResModelToJson(AddCallHistoryResModel data) =>
-    json.encode(data.toJson());
+String addCallHistoryResModelToJson(AddCallHistoryResModel data) => json.encode(data.toJson());
 
 class AddCallHistoryResModel {
   int? status;
@@ -19,8 +17,7 @@ class AddCallHistoryResModel {
     this.data,
   });
 
-  factory AddCallHistoryResModel.fromJson(Map<String, dynamic> json) =>
-      AddCallHistoryResModel(
+  factory AddCallHistoryResModel.fromJson(Map<String, dynamic> json) => AddCallHistoryResModel(
         status: json["status"],
         success: json["success"],
         message: json["message"],
@@ -40,6 +37,7 @@ class Data {
   int? mobileNumber;
   String? userId;
   String? callType;
+  String? callTime;
   DateTime? date;
   String? minutes;
 
@@ -48,6 +46,7 @@ class Data {
     this.mobileNumber,
     this.userId,
     this.callType,
+    this.callTime,
     this.date,
     this.minutes,
   });
@@ -57,6 +56,7 @@ class Data {
         mobileNumber: json["mobile_number"],
         userId: json["user_id"],
         callType: json["call_type"],
+        callTime: json["call_time"],
         date: json["date"] == null ? null : DateTime.parse(json["date"]),
         minutes: json["minutes"],
       );
@@ -66,6 +66,7 @@ class Data {
         "mobile_number": mobileNumber,
         "user_id": userId,
         "call_type": callType,
+        "call_time": callTime,
         "date": date?.toIso8601String(),
         "minutes": minutes,
       };

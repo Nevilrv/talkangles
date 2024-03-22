@@ -5,7 +5,7 @@ class PreferenceManager {
 
   final String login = "LOGIN";
   final String userName = "USER_NAME";
-  final String name = "NAME";
+  final String names = "NAME";
   final String userId = "USER_ID";
   final String userNumber = "USER_NUMBER";
   final String userToken = "USER_TOKEN";
@@ -13,7 +13,6 @@ class PreferenceManager {
   final String userDetails = "USER_DETAILS";
   final String roles = "ROLE";
   final String onMessage = "ON_MESSAGE";
-  final String onRejectCall = "On_Reject_Call";
 
   setLogin(bool loginEntry) {
     return getData.write(login, loginEntry);
@@ -32,11 +31,11 @@ class PreferenceManager {
   }
 
   setUserName(String name) {
-    getData.write(name, name);
+    getData.write(names, name);
   }
 
   getUserName() {
-    return getData.read(name);
+    return getData.read(names);
   }
 
   setId(String id) {
@@ -79,29 +78,20 @@ class PreferenceManager {
     return getData.read(userDetails);
   }
 
-  setRole(String role) {
-    getData.write(roles, role);
+  setRole(String role) async {
+   await getData.write(roles, role);
   }
 
   getRole() {
     return getData.read(roles);
   }
 
-  setSetScreen(bool tapMessage) {
-    getData.write(onMessage, tapMessage);
-    return false;
+  setSetScreen(bool tapMessage) async {
+    await getData.write(onMessage, tapMessage);
   }
 
   getScreen() {
     return getData.read(onMessage);
-  }
-
-  setRejectCall(bool onRejectCalls) {
-    getData.write(onRejectCall, onRejectCalls);
-  }
-
-  getRejectCall() {
-    return getData.read(onRejectCall);
   }
 
   /// CLEAR ALL DATA

@@ -3,18 +3,20 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:talkangels/common/app_textfield.dart';
+
 import 'package:talkangels/controller/handle_network_connections.dart';
 import 'package:talkangels/theme/app_layout.dart';
-import 'package:talkangels/ui/angels/constant/app_assets.dart';
-import 'package:talkangels/ui/angels/constant/app_color.dart';
+import 'package:talkangels/const/app_assets.dart';
+import 'package:talkangels/const/app_color.dart';
 import 'package:talkangels/ui/angels/constant/app_string.dart';
 import 'package:talkangels/const/extentions.dart';
 import 'package:talkangels/const/shared_prefs.dart';
 import 'package:talkangels/ui/angels/main/home_pages/home_screen_controller.dart';
-import 'package:talkangels/ui/angels/widgets/app_app_bar.dart';
-import 'package:talkangels/ui/angels/widgets/app_button.dart';
-import 'package:talkangels/ui/angels/widgets/app_dialogbox.dart';
-import 'package:talkangels/ui/angels/widgets/app_textfield.dart';
+import 'package:talkangels/common/app_app_bar.dart';
+import 'package:talkangels/common/app_button.dart';
+
+import '../../../../../common/app_dialogbox.dart';
 
 class MyWalletScreen extends StatefulWidget {
   const MyWalletScreen({Key? key}) : super(key: key);
@@ -40,9 +42,9 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     razorpay.clear();
     textFieldController;
+    super.dispose();
   }
 
   @override

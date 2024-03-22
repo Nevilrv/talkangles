@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:talkangels/const/extentions.dart';
-import 'package:talkangels/ui/staff/constant/app_color.dart';
-import 'package:talkangels/ui/staff/constant/app_assets.dart';
+import 'package:talkangels/const/app_color.dart';
+import 'package:talkangels/const/app_assets.dart';
 import 'package:talkangels/ui/staff/constant/app_string.dart';
 import 'package:talkangels/ui/staff/models/get_call_history_res_model.dart';
+import 'package:talkangels/ui/staff/utils/notification_service.dart';
 
 class MoreCallInfoScreen extends StatefulWidget {
   const MoreCallInfoScreen({Key? key}) : super(key: key);
@@ -14,8 +15,46 @@ class MoreCallInfoScreen extends StatefulWidget {
   State<MoreCallInfoScreen> createState() => _MoreCallInfoScreenState();
 }
 
-class _MoreCallInfoScreenState extends State<MoreCallInfoScreen> {
+class _MoreCallInfoScreenState extends State<MoreCallInfoScreen> with WidgetsBindingObserver {
   CallHistory callHistory = Get.arguments["call_history"];
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        print('appLifeCycleState inactive');
+        break;
+      case AppLifecycleState.resumed:
+        NotificationService.getInitialMsg();
+
+        print('call screen--erdrfefe4rf-');
+        print('appLifeCycleState resumed');
+        break;
+      case AppLifecycleState.paused:
+        print('appLifeCycleState paused');
+        break;
+      case AppLifecycleState.hidden:
+        print('appLifeCycleState suspending');
+        break;
+      case AppLifecycleState.detached:
+        print('appLifeCycleState detached');
+        break;
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +105,10 @@ class _MoreCallInfoScreenState extends State<MoreCallInfoScreen> {
                   ),
                 ),
                 Positioned(
-                  bottom: h * 0.04,
+                  bottom: h * 0.01,
                   left: w * 0.08,
-                  child: (callHistory.user?.userName ?? '').leagueSpartanfs20w600(fontSize: 36),
+                  child: (callHistory.user?.userName ?? '')
+                      .leagueSpartanfs20w600(fontSize: 36, textOverflow: TextOverflow.ellipsis),
                 ),
               ],
             ),

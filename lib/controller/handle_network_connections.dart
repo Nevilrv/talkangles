@@ -33,7 +33,6 @@ class HandleNetworkConnection extends GetxController {
 
   Future<void> updateConnectionStatus(ConnectivityResult result) async {
     changeResult(result);
-    // log("ConnectivityResult.none----${ConnectivityResult.none}");
 
     if (result == ConnectivityResult.none || result == ConnectivityResult.bluetooth) {
       // log("RESULT----$result");

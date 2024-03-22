@@ -1,15 +1,7 @@
 class AppString {
-  static const talkAngels = "TALK ANGELS";
   static const online = "Online";
   static const offline = "Offline";
-  static const verificationSuccessful = "Verification Successful!";
-  static const verificationSuccessfulDescription =
-      "Your account has been successfully verified with us. Thank you for joining us! Dive back into our app and and discover something new every day.";
-  static const logIn = "Log In";
   static const somethingWentWrong = "Something went wrong!";
-  static const somethingWentWrongDescription =
-      "Looks like there's a small issue logging into your account. No worries! Just try logging in again, and it should be fixed. Thanks for your patience!";
-  static const tryAgain = "Try Again";
   static const hey = "Hey, ";
   static const myProfile = "My Profile";
   static const callHistory = "Call History";
@@ -31,8 +23,6 @@ class AppString {
   static const charges = "Charges";
   static const ongoingCall = "Ongoing Call..";
   static const mute = "Mute";
-  static const bluetooth = "Bluetooth";
-  static const hold = "Hold";
   static const total = "Total";
   static const minutes = "Minutes";
   static const currentEarnings = "Current Earnings";
@@ -50,19 +40,13 @@ class AppString {
   static const back = "Back";
   static const submit = "Submit";
   static const totalMoney = "Total Money";
-  static const youHaveAlreadySentWithdrawRequest =
-      "There are pending withdrawal requests. Please wait for approval or rejection";
   static const pleaseEnterYourProblem = "Please Enter Your Problem";
-  static const unknownError = "Unknown Error";
   static const mobileIndia = "Mobile | India";
-  static const date = "Dec 15";
   static const checkYourConnectionThenRefreshThePage = "Check your connection, then refresh the page.";
   static const refresh = "Refresh";
-  static const serverError = "Server Error";
   static const noInternetConnection = "No Internet Connection";
   static const busy = "Busy";
   static const available = "Available";
   static const staff = "staff";
   static const speaker = "Speaker";
-  static const noCurrentEarning = "No Current Earning";
 }

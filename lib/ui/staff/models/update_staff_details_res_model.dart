@@ -45,7 +45,7 @@ class Data {
   String? bio;
   String? image;
   String? language;
-  String? age;
+  int? age;
   String? activeStatus;
   String? callStatus;
   int? status;
