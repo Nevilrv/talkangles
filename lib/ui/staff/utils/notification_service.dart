@@ -90,6 +90,91 @@ class NotificationService {
     });
   }
 
+  // static callHandle(RemoteMessage message) {
+  //   FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
+  //     switch (event!.event) {
+  //       case Event.actionCallIncoming:
+  //         print('callHandle====actionCallIncoming===========>>>>');
+  //         await homeController.updateCallStatus(AppString.busy);
+  //         print("updateCallStatus(AppString.busy)----11?}");
+  //         // TODO: received an incoming call
+  //         break;
+  //       case Event.actionCallStart:
+  //         print('callHandle====actionCallStart===========>>>>');
+  //         // TODO: started an outgoing call
+  //         // TODO: show screen calling in Flutter
+  //         break;
+  //       case Event.actionCallAccept:
+  //         print('callHandle====actionCallAccept===========>>>>');
+  //         Get.toNamed(Routes.callingScreenStaff, arguments: {
+  //           "remoteMessage": message.data,
+  //         });
+  //         // TODO: accepted an incoming call
+  //         // TODO: show screen calling in Flutter
+  //         break;
+  //       case Event.actionCallDecline:
+  //         print('callHandle====actionCallDecline===========>>>>');
+  //         await homeController.updateCallStatus(AppString.available);
+  //
+  //         print(
+  //             "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
+  //         await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
+  //         await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'staff');
+  //         await FlutterCallkitIncoming.endAllCalls();
+  //         // TODO: declined an incoming call
+  //         break;
+  //       case Event.actionCallEnded:
+  //         print('callHandle====actionCallEnded===========>>>>');
+  //         // TODO: ended an incoming/outgoing call
+  //         break;
+  //       case Event.actionCallTimeout:
+  //         print('callHandle====actionCallTimeout===========>>>>');
+  //         await homeController.updateCallStatus(AppString.available);
+  //         print(
+  //             "Notification_Service-callHandle---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
+  //         await homeController.addCallHistory(
+  //             message.data['_id'], PreferenceManager().getId().toString(), 'reject', '0');
+  //         await homeController.rejectCall(PreferenceManager().getId().toString(), message.data['_id'], 'staff');
+  //
+  //         await FlutterCallkitIncoming.endAllCalls();
+  //         // TODO: missed an incoming call
+  //         break;
+  //       case Event.actionCallCallback:
+  //         print('callHandle====actionCallCallback===========>>>>');
+  //         // TODO: only Android - click action `Call back` from missed call notification
+  //         break;
+  //       case Event.actionCallToggleHold:
+  //         print('callHandle====actionCallToggleHold===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleMute:
+  //         print('callHandle====actionCallToggleMute===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleDmtf:
+  //         print('callHandle====actionCallToggleDmtf===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleGroup:
+  //         print('callHandle====actionCallToggleGroup===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleAudioSession:
+  //         print('callHandle====actionCallToggleAudioSession===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionDidUpdateDevicePushTokenVoip:
+  //         print('callHandle====actionDidUpdateDevicePushTokenVoip===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallCustom:
+  //         print('callHandle====actionCallCustom===========>>>>');
+  //         // TODO: for custom action
+  //         break;
+  //     }
+  //   });
+  // }
+
   static callHandle(RemoteMessage message) {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
       print("EVENT__callHandle_______  $event");
@@ -166,6 +251,134 @@ class NotificationService {
       }
     });
   }
+
+  // static callHandle1(RemoteMessage message) {
+  //   FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
+  //     switch (event!.event) {
+  //       case Event.actionCallIncoming:
+  //         print('callHandle1====actionCallIncoming===========>>>>');
+  //         Future.delayed(const Duration(seconds: 1), () async {
+  //           if (homeController.getStaffDetailResModel.data == null) {
+  //             await homeController.getStaffDetailApi().then((result) async {
+  //               print("RESULT___$result");
+  //               if (homeController.getStaffDetailResModel.data?.activeStatus == AppString.online) {
+  //                 await homeController.updateCallStatus(AppString.busy);
+  //                 print("updateCallStatus(AppString.busy)----22?}");
+  //               } else {
+  //                 await homeController.activeStatusApi(AppString.online).then((result1) async {
+  //                   print("RESULT1___$result1");
+  //                   await homeController.updateCallStatus(AppString.busy);
+  //                   print("updateCallStatus(AppString.busy)----33?}");
+  //                 });
+  //               }
+  //             });
+  //           } else {
+  //             if (homeController.getStaffDetailResModel.data?.activeStatus == AppString.online) {
+  //               await homeController.updateCallStatus(AppString.busy);
+  //               print("updateCallStatus(AppString.busy)----44?}");
+  //             } else {
+  //               await homeController.activeStatusApi(AppString.online).then((result1) async {
+  //                 print("RESULT1___$result1");
+  //                 await homeController.updateCallStatus(AppString.busy);
+  //                 print("updateCallStatus(AppString.busy)----55?}");
+  //               });
+  //             }
+  //           }
+  //         });
+  //
+  //         print("message.data['_id']-1-------------> ${message.data['_id']}");
+  //         print("PreferenceManager().getId()-1-------------> ${PreferenceManager().getId()}");
+  //         // TODO: received an incoming call
+  //         break;
+  //       case Event.actionCallStart:
+  //         print('callHandle1====actionCallStart===========>>>>');
+  //         // TODO: started an outgoing call
+  //         // TODO: show screen calling in Flutter
+  //         break;
+  //       case Event.actionCallAccept:
+  //         print('callHandle1====actionCallAccept===========>>>>');
+  //         await PreferenceManager().setSetScreen(true);
+  //         log("PreferenceManager-------------->_callHandle1 ${PreferenceManager().getScreen()}");
+  //         // TODO: accepted an incoming call
+  //         // TODO: show screen calling in Flutter
+  //         break;
+  //       case Event.actionCallDecline:
+  //         print('callHandle1====actionCallDecline===========>>>>');
+  //         await FlutterCallkitIncoming.endAllCalls();
+  //         print(
+  //             "homeController.getStaffDetailResModel.data?.activeStatus_1   ${homeController.getStaffDetailResModel.data?.activeStatus}");
+  //         print(
+  //             "Notification_Service-callHandle-1----rejectCall : ${PreferenceManager().getId()}, ${message.data['_id']}, staff}");
+  //         await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'staff');
+  //
+  //         await homeController.updateCallStatus(AppString.available).then((result111) async {
+  //           print("updateCallStatus(AppString.available)----3333?}");
+  //           print("RESULT111==___$result111");
+  //           await homeController.activeStatusApi(AppString.offline);
+  //         });
+  //
+  //         print(
+  //             "Notification_Service-callHandle-1---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
+  //         await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
+  //         // TODO: declined an incoming call
+  //         break;
+  //       case Event.actionCallEnded:
+  //         print('callHandle1====actionCallEnded===========>>>>');
+  //         // TODO: ended an incoming/outgoing call
+  //         break;
+  //       case Event.actionCallTimeout:
+  //         print('callHandle1====actionCallTimeout===========>>>>');
+  //         print("message.data['_id']-11-------------> ${message.data['_id']}");
+  //         print("PreferenceManager().getId()-11-------------> ${PreferenceManager().getId()}");
+  //         await FlutterCallkitIncoming.endAllCalls();
+  //         await homeController.rejectCall(PreferenceManager().getId(), message.data['_id'], 'staff');
+  //
+  //         await homeController.updateCallStatus(AppString.available).then((result1) async {
+  //           print("updateCallStatus(AppString.available)----7777?}");
+  //           print("RESULT1!!!___$result1");
+  //           await homeController.activeStatusApi(AppString.offline);
+  //         });
+  //
+  //         print(
+  //             "Notification_Service-callHandle1---addCallHistory : ${message.data['_id']}, ${PreferenceManager().getId()}, reject, 0");
+  //         await homeController.addCallHistory(message.data['_id'], PreferenceManager().getId(), 'reject', '0');
+  //         // TODO: missed an incoming call
+  //         break;
+  //       case Event.actionCallCallback:
+  //         print('callHandle1====actionCallCallback===========>>>>');
+  //         // TODO: only Android - click action `Call back` from missed call notification
+  //         break;
+  //       case Event.actionCallToggleHold:
+  //         print('callHandle1====actionCallToggleHold===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleMute:
+  //         print('callHandle1====actionCallToggleMute===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleDmtf:
+  //         print('callHandle1====actionCallToggleDmtf===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleGroup:
+  //         print('callHandle1====actionCallToggleGroup===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallToggleAudioSession:
+  //         print('callHandle1====actionCallToggleAudioSession===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionDidUpdateDevicePushTokenVoip:
+  //         print('callHandle1====actionDidUpdateDevicePushTokenVoip===========>>>>');
+  //         // TODO: only iOS
+  //         break;
+  //       case Event.actionCallCustom:
+  //         print('callHandle1====actionCallCustom===========>>>>');
+  //         // TODO: for custom action
+  //         break;
+  //     }
+  //   });
+  // }
 
   static callHandle1(RemoteMessage message) {
     FlutterCallkitIncoming.onEvent.listen((CallEvent? event) async {
@@ -320,6 +533,7 @@ class NotificationService {
         backgroundColor: '#28274C',
         backgroundUrl: 'assets/test.png',
         actionColor: '#4CAF50',
+
         // isShowMissedCallNotification: false,
       ),
       ios: IOSParams(

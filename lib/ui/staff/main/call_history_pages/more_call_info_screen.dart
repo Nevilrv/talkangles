@@ -161,7 +161,9 @@ class _MoreCallInfoScreenState extends State<MoreCallInfoScreen> with WidgetsBin
                       itemCount: reverseData.length,
                       itemBuilder: (context, index) {
                         DateTime myDateTime = DateTime.parse("${reverseData[index].date}");
-                        String formattedDate = DateFormat('d MMM hh:mm a').format(myDateTime);
+                        String formattedDate = DateFormat('d MMM').format(myDateTime);
+                        String times =
+                            DateFormat.jm().format(DateFormat("hh:mm:ss").parse("${reverseData[index].callTime}"));
 
                         return InkWell(
                           onTap: () {},
@@ -173,13 +175,13 @@ class _MoreCallInfoScreenState extends State<MoreCallInfoScreen> with WidgetsBin
                                 reverseData[index].callType == "outgoing"
                                     ? const Icon(Icons.phone_forwarded, color: whiteColor, size: 15)
                                     : reverseData[index].callType == "incoming"
-                                        ? const Icon(Icons.phone_callback_rounded, color: whiteColor, size: 15)
-                                        : const Icon(Icons.phone_missed, color: whiteColor, size: 15),
+                                        ? const Icon(Icons.phone_callback_rounded, color: greenColor, size: 15)
+                                        : const Icon(Icons.phone_missed, color: redColor, size: 15),
                                 (w * 0.04).addWSpace(),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    formattedDate.regularLeagueSpartan(fontWeight: FontWeight.w700),
+                                    "$formattedDate $times".regularLeagueSpartan(fontWeight: FontWeight.w700),
                                     (h * 0.003).addHSpace(),
                                     "${reverseData[index].callType ?? ''} Call, ${reverseData[index].minutes ?? ''}"
                                         .regularLeagueSpartan(

@@ -19,7 +19,7 @@ class ResponseItem {
 
   factory ResponseItem.fromJson(Map<String, dynamic> json) => ResponseItem(
         data: json["data"],
-        message: json["msg"],
+        message: json["msg"].toString(),
         status: json["result"] ?? false,
         statusCode: json["statusCode"],
       );
@@ -27,7 +27,7 @@ class ResponseItem {
   Map<String, dynamic> toJson() => {
         "data": data,
         "msg": message,
-        "status": status ?? false,
+        "status": status,
         "statusCode": statusCode,
       };
 }

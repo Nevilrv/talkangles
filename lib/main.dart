@@ -147,11 +147,3 @@ class ControllerBindings extends Bindings {
     Get.lazyPut(() => HandleNetworkConnection());
   }
 }
-
-/// App Reduce Command
-/// flutter build apk --split-per-abi
-
-/// New Staff  : 65f51f6c0b435d92153bf971      :   9510624635
-
-/// AppID:  1386965975
-/// AppSign:  012150c93b1cb604a6e245f0ff2f99a7259ce7db27247dff1b14a4d637377fe0

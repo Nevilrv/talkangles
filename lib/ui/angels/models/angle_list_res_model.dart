@@ -44,6 +44,7 @@ class AngleData {
   String? fcmToken;
   int? countryCode;
   double? totalRating;
+  String? callAvailableStatus;
   String? totalListing;
   List<Review>? reviews;
 
@@ -63,6 +64,7 @@ class AngleData {
     this.fcmToken,
     this.countryCode,
     this.totalRating,
+    this.callAvailableStatus,
     this.totalListing,
     this.reviews,
   });
@@ -83,6 +85,7 @@ class AngleData {
         fcmToken: json["fcmToken"],
         countryCode: json["country_code"],
         totalRating: json["total_rating"]?.toDouble(),
+        callAvailableStatus: json["call_available_status"],
         totalListing: json["total_listing"],
         reviews: json["reviews"] == null ? [] : List<Review>.from(json["reviews"]!.map((x) => Review.fromJson(x))),
       );
@@ -103,6 +106,7 @@ class AngleData {
         "fcmToken": fcmToken,
         "country_code": countryCode,
         "total_rating": totalRating,
+        "call_available_status": callAvailableStatus,
         "total_listing": totalListing,
         "reviews": reviews == null ? [] : List<dynamic>.from(reviews!.map((x) => x.toJson())),
       };

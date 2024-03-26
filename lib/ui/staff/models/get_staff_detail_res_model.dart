@@ -52,6 +52,7 @@ class Data {
   DateTime? updatedAt;
   int? v;
   String? fcmToken;
+  String? callAvailableStatus;
 
   Data({
     this.listing,
@@ -77,6 +78,7 @@ class Data {
     this.updatedAt,
     this.v,
     this.fcmToken,
+    this.callAvailableStatus,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
@@ -103,6 +105,7 @@ class Data {
         updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
         v: json["__v"],
         fcmToken: json["fcmToken"],
+        callAvailableStatus: json["call_available_status"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -129,6 +132,7 @@ class Data {
         "updated_at": updatedAt?.toIso8601String(),
         "__v": v,
         "fcmToken": fcmToken,
+        "call_available_status": callAvailableStatus,
       };
 }
 

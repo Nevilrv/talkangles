@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:talkangels/const/app_routes.dart';
@@ -15,8 +14,6 @@ import 'package:talkangels/ui/staff/main/home_pages/home_controller.dart';
 import 'package:talkangels/common/app_app_bar.dart';
 import 'package:talkangels/common/app_button.dart';
 import 'package:talkangels/common/app_show_profile_pic.dart';
-import 'package:talkangels/common/app_textfield.dart';
-
 import 'package:talkangels/common/common_container.dart';
 
 import '../../utils/notification_service.dart';
@@ -35,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   BottomBarController bottomBarController = Get.put(BottomBarController());
 
   bool requestStatus = false;
+  bool notAvailableStatus = false;
   int? amounts;
   final _formKey = GlobalKey<FormState>();
 
@@ -88,6 +86,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             controller.getStaffDetailResModel.data?.earnings?.sentWithdrawRequest == 0
                 ? requestStatus = false
                 : requestStatus = true;
+
+            ///Not Available API
+            controller.getStaffDetailResModel.data?.callAvailableStatus == '0'
+                ? notAvailableStatus = true
+                : notAvailableStatus = false;
 
             return RefreshIndicator(
               onRefresh: () {
@@ -444,6 +447,153 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                           ),
                                                   ),
                                                 ),
+                                                Container(
+                                                  padding:
+                                                      EdgeInsets.symmetric(horizontal: w * 0.03, vertical: h * 0.015),
+                                                  decoration: BoxDecoration(
+                                                      color: containerColor, borderRadius: BorderRadius.circular(20)),
+                                                  child: Row(
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          AppString.updateAvailableStatus.regularLeagueSpartan(
+                                                              fontSize: 14, fontColor: appColorBlue),
+                                                          (h * 0.01).addHSpace(),
+                                                          ("You are ${controller.getStaffDetailResModel.data?.callAvailableStatus == "0" ? AppString.notAvailable : AppString.available}")
+                                                              .regularLeagueSpartan(
+                                                                  fontColor: greyFontColor,
+                                                                  fontSize: 12,
+                                                                  fontWeight: FontWeight.w400),
+                                                        ],
+                                                      ),
+                                                      const Spacer(),
+                                                      Switch(
+                                                        activeColor: appColorGreen,
+                                                        inactiveTrackColor: textFieldBorderColor,
+                                                        thumbColor: MaterialStateProperty.resolveWith((Set states) {
+                                                          if (states.contains(MaterialState.disabled)) {
+                                                            return containerColor.withOpacity(0.05);
+                                                          }
+                                                          return containerColor;
+                                                        }),
+                                                        value: notAvailableStatus,
+                                                        onChanged: (value) async {
+                                                          if (controller
+                                                                  .getStaffDetailResModel.data?.callAvailableStatus ==
+                                                              "1") {
+                                                            Get.dialog(
+                                                              barrierDismissible: false,
+                                                              AlertDialog(
+                                                                insetPadding:
+                                                                    EdgeInsets.symmetric(horizontal: Get.width * 0.08),
+                                                                contentPadding: EdgeInsets.all(Get.width * 0.05),
+                                                                shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(10)),
+                                                                content: Builder(
+                                                                  builder: (context) {
+                                                                    return SizedBox(
+                                                                      height: h * 0.4,
+                                                                      width: w * 0.9,
+                                                                      child: Column(
+                                                                        children: [
+                                                                          const Spacer(),
+                                                                          SizedBox(
+                                                                              height: h * 0.13,
+                                                                              width: w * 0.26,
+                                                                              child: assetImage(
+                                                                                  AppAssets.sureAnimationAssets,
+                                                                                  fit: BoxFit.contain)),
+                                                                          const Spacer(),
+                                                                          AppString.doYouWantToNotAvailable
+                                                                              .leagueSpartanfs20w600(
+                                                                                  fontColor: blackColor,
+                                                                                  fontSize: 22,
+                                                                                  textAlign: TextAlign.center),
+                                                                          (h * 0.01).addHSpace(),
+                                                                          AppString
+                                                                              .areYouSureYouReallyWantNotAvailableFromyourTalkAngelAccount
+                                                                              .regularLeagueSpartan(
+                                                                                  fontColor: greyFontColor,
+                                                                                  fontSize: 15,
+                                                                                  textAlign: TextAlign.center),
+                                                                          (h * 0.04).addHSpace(),
+                                                                          Row(
+                                                                            children: [
+                                                                              Expanded(
+                                                                                flex: 1,
+                                                                                child: AppButton(
+                                                                                  height: h * 0.06,
+                                                                                  color: Colors.transparent,
+                                                                                  onTap: () async {
+                                                                                    ///Not Available API
+                                                                                    Get.back();
+                                                                                    await homeController
+                                                                                        .updateAngelAvailableStatus("0")
+                                                                                        .then((result) async {
+                                                                                      await homeController
+                                                                                          .getStaffDetailApi();
+                                                                                      setState(() {
+                                                                                        notAvailableStatus = true;
+                                                                                      });
+                                                                                    });
+                                                                                  },
+                                                                                  child: homeController
+                                                                                              .isAngelAvailableLoading ==
+                                                                                          true
+                                                                                      ? const Center(
+                                                                                          child:
+                                                                                              CircularProgressIndicator(
+                                                                                                  color: whiteColor))
+                                                                                      : AppString.areYouSure
+                                                                                          .regularLeagueSpartan(
+                                                                                              fontColor: blackColor,
+                                                                                              fontSize: 14,
+                                                                                              fontWeight:
+                                                                                                  FontWeight.w800),
+                                                                                ),
+                                                                              ),
+                                                                              (w * 0.02).addWSpace(),
+                                                                              Expanded(
+                                                                                flex: 1,
+                                                                                child: AppButton(
+                                                                                  height: h * 0.06,
+                                                                                  color: appColorBlue,
+                                                                                  onTap: () {
+                                                                                    Get.back();
+                                                                                  },
+                                                                                  child: AppString.cancel
+                                                                                      .regularLeagueSpartan(
+                                                                                          fontSize: 14,
+                                                                                          fontWeight: FontWeight.w800),
+                                                                                ),
+                                                                              )
+                                                                            ],
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                ),
+                                                              ),
+                                                            );
+                                                          } else {
+                                                            ///Available API
+
+                                                            await homeController
+                                                                .updateAngelAvailableStatus("1")
+                                                                .then((result) async {
+                                                              await homeController.getStaffDetailApi();
+                                                              setState(() {
+                                                                notAvailableStatus = false;
+                                                              });
+                                                            });
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -461,7 +611,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                       ),
                           ),
                         ),
-                        controller.logOutLoading == true
+                        controller.logOutLoading == true || controller.isAngelAvailableLoading == true
                             ? Container(
                                 height: h,
                                 width: w,

@@ -51,12 +51,14 @@ class CallHistory {
 class History {
   DateTime? date;
   String? callType;
+  String? callTime;
   String? minutes;
   int? mobileNumber;
 
   History({
     this.date,
     this.callType,
+    this.callTime,
     this.minutes,
     this.mobileNumber,
   });
@@ -64,6 +66,7 @@ class History {
   factory History.fromJson(Map<String, dynamic> json) => History(
         date: json["date"] == null ? null : DateTime.parse(json["date"]),
         callType: json["call_type"],
+        callTime: json["call_time"],
         minutes: json["minutes"],
         mobileNumber: json["mobile_number"],
       );
@@ -71,6 +74,7 @@ class History {
   Map<String, dynamic> toJson() => {
         "date": date?.toIso8601String(),
         "call_type": callType,
+        "call_time": callTime,
         "minutes": minutes,
         "mobile_number": mobileNumber,
       };

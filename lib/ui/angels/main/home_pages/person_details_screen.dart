@@ -14,7 +14,6 @@ import 'package:talkangels/ui/angels/models/angle_list_res_model.dart';
 import 'package:talkangels/common/app_app_bar.dart';
 import 'package:talkangels/common/app_button.dart';
 import 'package:talkangels/common/app_show_profile_pic.dart';
-import 'package:talkangels/common/app_textfield.dart';
 
 class PersonDetailScreen extends StatefulWidget {
   const PersonDetailScreen({Key? key}) : super(key: key);
@@ -28,20 +27,6 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
   HomeScreenController homeController = Get.put(HomeScreenController());
   String angelId = Get.arguments["angel_id"];
   AngleData? angelData;
-
-  void getAngelsData() {
-    homeController.angleAllData.forEach((element) {
-      if (element.id == angelId) {
-        angelData = element;
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getAngelsData();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +49,11 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
           ),
           body: GetBuilder<HomeScreenController>(
             builder: (controller) {
+              homeController.angleAllData.forEach((element) {
+                if (element.id == angelId) {
+                  angelData = element;
+                }
+              });
               return Stack(
                 children: [
                   Container(
@@ -105,11 +95,13 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                                                     backgroundColor: containerColor,
                                                     radius: 7,
                                                     child: CircleAvatar(
-                                                        backgroundColor: angelData?.callStatus == AppString.available
-                                                            ? greenColor
-                                                            : angelData?.callStatus == AppString.busy
-                                                                ? yellowColor
-                                                                : redFontColor,
+                                                        backgroundColor: angelData?.callAvailableStatus == "0"
+                                                            ? redColor
+                                                            : angelData?.callStatus == AppString.available
+                                                                ? greenColor
+                                                                : angelData?.callStatus == AppString.busy
+                                                                    ? yellowColor
+                                                                    : redFontColor,
                                                         radius: 4.5),
                                                   ),
                                                 ),
@@ -132,12 +124,17 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                                                     fontWeight: FontWeight.w500,
                                                     textOverflow: TextOverflow.ellipsis,
                                                   ),
-                                                  (angelData?.activeStatus ?? "").regularLeagueSpartan(
-                                                      fontColor: angelData?.activeStatus == AppString.online
-                                                          ? greenColor
-                                                          : yellowColor,
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w500),
+                                                  (angelData?.callAvailableStatus == "0"
+                                                          ? AppString.offline
+                                                          : angelData?.activeStatus ?? "")
+                                                      .regularLeagueSpartan(
+                                                          fontColor: angelData?.callAvailableStatus == "0"
+                                                              ? yellowColor
+                                                              : angelData?.activeStatus == AppString.online
+                                                                  ? greenColor
+                                                                  : yellowColor,
+                                                          fontSize: 14,
+                                                          fontWeight: FontWeight.w500),
                                                 ],
                                               ),
                                             ),
@@ -382,13 +379,26 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
                                               showAppSnackBar(AppString.noInternetConnection);
                                             }
                                           },
+                                          color: angelData?.callAvailableStatus == "0"
+                                              ? redColor
+                                              : angelData?.callStatus == AppString.available
+                                                  ? greenColor
+                                                  : angelData?.callStatus == AppString.busy
+                                                      ? yellowColor
+                                                      : redFontColor,
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               const Icon(Icons.call, color: whiteColor),
                                               (w * 0.03).addWSpace(),
-                                              (AppString.talkNow)
-                                                  .regularLeagueSpartan(fontWeight: FontWeight.w900, fontSize: 20),
+                                              (angelData?.callAvailableStatus == "0"
+                                                      ? AppString.notAvailable
+                                                      : angelData?.callStatus == AppString.available
+                                                          ? AppString.talkNow
+                                                          : angelData?.callStatus == AppString.busy
+                                                              ? AppString.busy
+                                                              : AppString.notAvailable)
+                                                  .regularLeagueSpartan(fontWeight: FontWeight.w900, fontSize: 22),
                                             ],
                                           ),
                                         ).paddingSymmetric(horizontal: w * 0.04),
@@ -501,14 +511,35 @@ class _ProfileDialogState extends State<ProfileDialog> {
                           },
                           child: Row(
                             children: [
-                              const CircleAvatar(
-                                backgroundColor: appColorGreen,
+                              CircleAvatar(
+                                backgroundColor: angelData?.callAvailableStatus == "0"
+                                    ? redColor
+                                    : angelData?.callStatus == AppString.available
+                                        ? greenColor
+                                        : angelData?.callStatus == AppString.busy
+                                            ? yellowColor
+                                            : redFontColor,
                                 radius: 15,
-                                child: Icon(Icons.phone, color: whiteColor, size: 18),
+                                child: const Icon(Icons.phone, color: whiteColor, size: 18),
                               ),
                               (Get.width * 0.02).addWSpace(),
-                              (AppString.talkNow).regularLeagueSpartan(
-                                  fontColor: appColorGreen, fontSize: 15, fontWeight: FontWeight.w900),
+                              (angelData?.callAvailableStatus == "0"
+                                      ? AppString.notAvailable
+                                      : angelData?.callStatus == AppString.available
+                                          ? AppString.talkNow
+                                          : angelData?.callStatus == AppString.busy
+                                              ? AppString.busy
+                                              : AppString.notAvailable)
+                                  .regularLeagueSpartan(
+                                      fontColor: angelData?.callAvailableStatus == "0"
+                                          ? redColor
+                                          : angelData?.callStatus == AppString.available
+                                              ? greenColor
+                                              : angelData?.callStatus == AppString.busy
+                                                  ? yellowColor
+                                                  : redFontColor,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w900),
                             ],
                           ),
                         ),

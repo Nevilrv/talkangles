@@ -257,6 +257,22 @@ class HomeRepoStaff {
     return result;
   }
 
+  /// Post Report a Problem _Staff
+  static Future<ResponseItem> updateAngelAvailableStatus(String availableStatus) async {
+    ResponseItem result;
+    String userId = PreferenceManager().getId().toString();
+    Map<String, dynamic> requestData = {
+      "call_available_status": availableStatus.toString()
+      // 0, 1
+    };
+    print("requestData___________${requestData}");
+
+    String requestUrl = AppUrls.BASE_URL + MethodNamesStaff.updateAngelAvailableStatus + userId;
+    result = await BaseApiHelper.putRequestToken(requestUrl, requestData);
+
+    return result;
+  }
+
   /// Post Staff Details
   static Future<UpdateStaffDetailResModel?> updateStaffDetails(
       {String? userName,

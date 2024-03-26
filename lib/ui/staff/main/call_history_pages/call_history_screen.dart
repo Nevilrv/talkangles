@@ -13,9 +13,7 @@ import 'package:talkangels/ui/staff/constant/app_string.dart';
 import 'package:talkangels/ui/staff/main/call_history_pages/call_history_controller.dart';
 import 'package:talkangels/ui/staff/models/get_call_history_res_model.dart';
 import 'package:talkangels/common/app_app_bar.dart';
-
 import 'package:talkangels/common/app_show_profile_pic.dart';
-import 'package:talkangels/common/app_textfield.dart';
 import 'package:talkangels/ui/staff/utils/notification_service.dart';
 
 class CallHistoryScreen extends StatefulWidget {
@@ -116,7 +114,8 @@ class _CallHistoryScreenState extends State<CallHistoryScreen> with WidgetsBindi
                                           DateTime.parse("${reverseData[index].history?[lastIndex].date}");
 
                                       String formattedDate = DateFormat('MMM d').format(myDateTime);
-                                      String formattedTime = DateFormat('hh:mm a').format(myDateTime);
+                                      String times = DateFormat.jm().format(DateFormat("hh:mm:ss")
+                                          .parse("${reverseData[index].history?[lastIndex].callTime}"));
 
                                       return InkWell(
                                         onTap: () {
@@ -176,7 +175,7 @@ class _CallHistoryScreenState extends State<CallHistoryScreen> with WidgetsBindi
                                                   SizedBox(
                                                     width: w * 0.65,
                                                     child:
-                                                        "$formattedDate •${reverseData[index].history?[lastIndex].callType} call at $formattedTime"
+                                                        "$formattedDate •${reverseData[index].history?[lastIndex].callType} call at $times"
                                                             .regularLeagueSpartan(
                                                                 fontColor: greyFontColor,
                                                                 fontSize: 10,

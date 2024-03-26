@@ -61,6 +61,7 @@ class BaseApiHelper {
     print("request::$requestUrl");
     print("STAFF_ID::${PreferenceManager().getId().toString()}");
     String token = PreferenceManager().getToken().toString();
+
     return await http
         .put(Uri.parse(requestUrl), body: requestData, headers: {"Authorization": token})
         .then((response) => onValue(response))

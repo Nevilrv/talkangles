@@ -9,6 +9,7 @@ import 'package:talkangels/models/reject_call_res_model.dart';
 import 'package:talkangels/models/response_item.dart';
 import 'package:talkangels/ui/staff/models/active_status_res_model.dart';
 import 'package:talkangels/ui/staff/models/add_call_history_res_model.dart';
+import 'package:talkangels/ui/staff/models/angel_available_status_res_model.dart';
 import 'package:talkangels/ui/staff/models/call_status_update_res_model.dart';
 import 'package:talkangels/ui/staff/models/get_staff_detail_res_model.dart';
 import 'package:talkangels/controller/log_out_res_model.dart';
@@ -34,6 +35,9 @@ class HomeController extends GetxController {
 
   bool isUpdateCallStatusLoading = false;
   CallStatusUpdateResModel callStatusUpdateResModel = CallStatusUpdateResModel();
+
+  bool isAngelAvailableLoading = false;
+  AngelAvailableStatusResModel angelAvailableStatusResModel = AngelAvailableStatusResModel();
 
   bool logOutLoading = false;
   LogOutResModel logOutResModel = LogOutResModel();
@@ -199,6 +203,31 @@ class HomeController extends GetxController {
       update();
     }
     return callStatusUpdateResModel;
+  }
+
+  ///Angel Available Status
+  updateAngelAvailableStatus(String availableStatus) async {
+    isAngelAvailableLoading = true;
+    update();
+
+    ResponseItem item = await HomeRepoStaff.updateAngelAvailableStatus(availableStatus);
+    log("item---7------->${item.data}");
+    print("item---7------->${item.data}");
+    if (item.status == true) {
+      try {
+        angelAvailableStatusResModel = AngelAvailableStatusResModel.fromJson(item.data);
+        isAngelAvailableLoading = false;
+        update();
+      } catch (e) {
+        log("e=======ERRORS=======>$e");
+        isAngelAvailableLoading = false;
+        update();
+      }
+    } else {
+      isAngelAvailableLoading = false;
+      update();
+    }
+    return angelAvailableStatusResModel;
   }
 
   /// Post Update Staff Details

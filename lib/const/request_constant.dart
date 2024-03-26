@@ -25,6 +25,7 @@ class MethodNamesStaff {
   static const postReportProblemStaff = "staff/add-report";
   static const updateCallStatus = "user/update-call-status/";
   static const updateStaffDetails = "staff/update-staff/";
+  static const updateAngelAvailableStatus = "staff/update-available-status/";
 }
 
 class CommonApis {

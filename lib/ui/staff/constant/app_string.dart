@@ -31,6 +31,7 @@ class AppString {
   static const requestSent = "Request Sent";
   static const requestStatus = "Request Status";
   static const withdraw = "Withdraw ";
+  static const updateAvailableStatus = "Update Available Status";
   static const oneLineExplanation = "One line explanation";
   static const referralCodeApplied = "Referral Code Applied";
   static const noDataFound = "No Data Found!";
@@ -38,6 +39,10 @@ class AppString {
   static const noReviewsYet = "No Reviews Yet!";
   static const perMin = "Per Min";
   static const back = "Back";
+  static const areYouSure = "Are You Sure";
+  static const doYouWantToNotAvailable = "Do you want to Not Available?";
+  static const areYouSureYouReallyWantNotAvailableFromyourTalkAngelAccount =
+      "Are you sure you really want to\nNot Available from your TalkAngel account?";
   static const submit = "Submit";
   static const totalMoney = "Total Money";
   static const pleaseEnterYourProblem = "Please Enter Your Problem";
@@ -47,6 +52,7 @@ class AppString {
   static const noInternetConnection = "No Internet Connection";
   static const busy = "Busy";
   static const available = "Available";
+  static const notAvailable = "NotAvailable";
   static const staff = "staff";
   static const speaker = "Speaker";
 }

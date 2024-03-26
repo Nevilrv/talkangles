@@ -257,14 +257,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                               backgroundColor: containerColor,
                                                               radius: 7,
                                                               child: CircleAvatar(
-                                                                  backgroundColor: controller
-                                                                              .searchAngelsList[index].callStatus ==
-                                                                          AppString.available
-                                                                      ? greenColor
+                                                                  backgroundColor: controller.searchAngelsList[index]
+                                                                              .callAvailableStatus ==
+                                                                          "0"
+                                                                      ? redColor
                                                                       : controller.searchAngelsList[index].callStatus ==
-                                                                              AppString.busy
-                                                                          ? yellowColor
-                                                                          : redFontColor,
+                                                                              AppString.available
+                                                                          ? greenColor
+                                                                          : controller.searchAngelsList[index]
+                                                                                      .callStatus ==
+                                                                                  AppString.busy
+                                                                              ? yellowColor
+                                                                              : redFontColor,
                                                                   radius: 4.5),
                                                             ),
                                                           ),
@@ -288,22 +292,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              Icon(Icons.star,
-                                                                  size: 11,
-                                                                  color:
-                                                                      controller.searchAngelsList[index].activeStatus ==
-                                                                              AppString.online
-                                                                          ? greenColor
-                                                                          : yellowColor),
+                                                              const Icon(Icons.star, size: 11, color: yellowColor),
                                                               (w * 0.01).addWSpace(),
                                                               ("${controller.searchAngelsList[index].totalRating?.toStringAsFixed(1)}  (${controller.searchAngelsList[index].reviews?.length} Rating)")
                                                                   .regularLeagueSpartan(
-                                                                      fontColor: controller.searchAngelsList[index]
-                                                                                  .activeStatus ==
-                                                                              AppString.online
-                                                                          ? greenColor
-                                                                          : yellowColor,
-                                                                      fontSize: 10),
+                                                                      fontColor: yellowColor, fontSize: 10),
                                                             ],
                                                           ),
                                                         ],
@@ -324,11 +317,34 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                           height: h * 0.045,
                                                           width: w * 0.25,
                                                           decoration: BoxDecoration(
+                                                              color: controller.searchAngelsList[index]
+                                                                          .callAvailableStatus ==
+                                                                      "0"
+                                                                  ? redColor
+                                                                  : controller.searchAngelsList[index].callStatus ==
+                                                                          AppString.available
+                                                                      ? greenColor
+                                                                      : controller.searchAngelsList[index].callStatus ==
+                                                                              AppString.busy
+                                                                          ? yellowColor
+                                                                          : redFontColor,
                                                               borderRadius: BorderRadius.circular(5),
                                                               border: Border.all(color: textFieldBorderColor)),
                                                           child: Center(
-                                                              child: AppString.talkNow.regularLeagueSpartan(
-                                                                  fontSize: 14, fontWeight: FontWeight.w500)),
+                                                              child: (controller.searchAngelsList[index]
+                                                                              .callAvailableStatus ==
+                                                                          "0"
+                                                                      ? AppString.notAvailable
+                                                                      : controller.searchAngelsList[index].callStatus ==
+                                                                              AppString.available
+                                                                          ? AppString.talkNow
+                                                                          : controller.searchAngelsList[index]
+                                                                                      .callStatus ==
+                                                                                  AppString.busy
+                                                                              ? AppString.busy
+                                                                              : AppString.notAvailable)
+                                                                  .regularLeagueSpartan(
+                                                                      fontSize: 14, fontWeight: FontWeight.w900)),
                                                         ),
                                                       ),
                                                       (w * 0.04).addWSpace(),
@@ -396,14 +412,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                               backgroundColor: containerColor,
                                                               radius: 7,
                                                               child: CircleAvatar(
-                                                                backgroundColor: controller
-                                                                            .allAngelsListData[index].callStatus ==
-                                                                        AppString.available
-                                                                    ? greenColor
+                                                                backgroundColor: controller.allAngelsListData[index]
+                                                                            .callAvailableStatus ==
+                                                                        "0"
+                                                                    ? redColor
                                                                     : controller.allAngelsListData[index].callStatus ==
-                                                                            AppString.busy
-                                                                        ? yellowColor
-                                                                        : redFontColor,
+                                                                            AppString.available
+                                                                        ? greenColor
+                                                                        : controller.allAngelsListData[index]
+                                                                                    .callStatus ==
+                                                                                AppString.busy
+                                                                            ? yellowColor
+                                                                            : redFontColor,
                                                                 radius: 4.5,
                                                               ),
                                                             ),
@@ -428,22 +448,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                             mainAxisAlignment: MainAxisAlignment.center,
                                                             crossAxisAlignment: CrossAxisAlignment.center,
                                                             children: [
-                                                              Icon(Icons.star,
-                                                                  size: 11,
-                                                                  color: controller
-                                                                              .allAngelsListData[index].activeStatus ==
-                                                                          AppString.online
-                                                                      ? greenColor
-                                                                      : yellowColor),
+                                                              const Icon(Icons.star, size: 11, color: yellowColor),
                                                               (w * 0.01).addWSpace(),
                                                               ("${controller.allAngelsListData[index].totalRating?.toStringAsFixed(1)}  (${controller.allAngelsListData[index].reviews?.length} Rating)")
                                                                   .regularLeagueSpartan(
-                                                                      fontColor: controller.allAngelsListData[index]
-                                                                                  .activeStatus ==
-                                                                              AppString.online
-                                                                          ? greenColor
-                                                                          : yellowColor,
-                                                                      fontSize: 10),
+                                                                      fontColor: yellowColor, fontSize: 10),
                                                             ],
                                                           ),
                                                         ],
@@ -464,11 +473,36 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                                             height: h * 0.045,
                                                             width: w * 0.25,
                                                             decoration: BoxDecoration(
+                                                                color: controller.allAngelsListData[index]
+                                                                            .callAvailableStatus ==
+                                                                        "0"
+                                                                    ? redColor
+                                                                    : controller.allAngelsListData[index].callStatus ==
+                                                                            AppString.available
+                                                                        ? greenColor
+                                                                        : controller.allAngelsListData[index]
+                                                                                    .callStatus ==
+                                                                                AppString.busy
+                                                                            ? yellowColor
+                                                                            : redFontColor,
                                                                 borderRadius: BorderRadius.circular(5),
                                                                 border: Border.all(color: textFieldBorderColor)),
                                                             child: Center(
-                                                                child: AppString.talkNow.regularLeagueSpartan(
-                                                                    fontSize: 14, fontWeight: FontWeight.w500))),
+                                                                child: (controller.allAngelsListData[index]
+                                                                                .callAvailableStatus ==
+                                                                            "0"
+                                                                        ? AppString.notAvailable
+                                                                        : controller.allAngelsListData[index]
+                                                                                    .callStatus ==
+                                                                                AppString.available
+                                                                            ? AppString.talkNow
+                                                                            : controller.allAngelsListData[index]
+                                                                                        .callStatus ==
+                                                                                    AppString.busy
+                                                                                ? AppString.busy
+                                                                                : AppString.notAvailable)
+                                                                    .regularLeagueSpartan(
+                                                                        fontSize: 14, fontWeight: FontWeight.w800))),
                                                       ),
                                                       (w * 0.04).addWSpace(),
                                                     ],

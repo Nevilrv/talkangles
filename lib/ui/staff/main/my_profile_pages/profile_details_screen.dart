@@ -15,7 +15,6 @@ import 'package:talkangels/ui/staff/constant/app_string.dart';
 import 'package:talkangels/ui/staff/main/home_pages/home_controller.dart';
 import 'package:talkangels/common/app_app_bar.dart';
 import 'package:talkangels/common/app_show_profile_pic.dart';
-import 'package:talkangels/common/app_textfield.dart';
 import 'package:talkangels/ui/staff/utils/notification_service.dart';
 
 class ProfileDetailsScreen extends StatefulWidget {
@@ -172,15 +171,24 @@ class _ProfileDetailsScreenState extends State<ProfileDetailsScreen> with Widget
                                                   Positioned(
                                                     right: 6,
                                                     bottom: 6,
-                                                    child: controller.getStaffDetailResModel.data?.activeStatus ==
-                                                            AppString.online
-                                                        ? const CircleAvatar(
-                                                            backgroundColor: containerColor,
-                                                            radius: 7,
-                                                            child: CircleAvatar(
-                                                                backgroundColor: appColorGreen, radius: 4.5),
-                                                          )
-                                                        : const SizedBox(),
+                                                    child: CircleAvatar(
+                                                      backgroundColor: containerColor,
+                                                      radius: 7,
+                                                      child: CircleAvatar(
+                                                          backgroundColor: controller.getStaffDetailResModel.data
+                                                                      ?.callAvailableStatus ==
+                                                                  "0"
+                                                              ? redColor
+                                                              : controller.getStaffDetailResModel.data?.callStatus ==
+                                                                      AppString.available
+                                                                  ? appColorGreen
+                                                                  : controller.getStaffDetailResModel.data
+                                                                              ?.callStatus ==
+                                                                          AppString.busy
+                                                                      ? yellowColor
+                                                                      : redColor,
+                                                          radius: 4.5),
+                                                    ),
                                                   ),
                                                 ],
                                               ),

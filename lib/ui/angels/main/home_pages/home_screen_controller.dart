@@ -115,33 +115,39 @@ class HomeScreenController extends GetxController {
     });
   }
 
+  List<AngleData> availableCallStatusAngelsList = [];
   List<AngleData> angelsAvailableList = [];
   List<AngleData> angelsBusyList = [];
   List<AngleData> angelsNotAvailableList = [];
   List<AngleData> allAngelsListData = [];
 
   anglesFilterData() {
+    availableCallStatusAngelsList = [];
     angelsAvailableList = [];
     angelsBusyList = [];
     angelsNotAvailableList = [];
     allAngelsListData = [];
 
     angleAllData.forEach((element) {
-      if (element.callStatus == AppString.available) {
-        angelsAvailableList.add(element);
-        update();
-      } else if (element.callStatus == AppString.busy) {
-        angelsBusyList.add(element);
+      if (element.callAvailableStatus == "0") {
+        availableCallStatusAngelsList.add(element);
         update();
       } else {
-        angelsNotAvailableList.add(element);
-        update();
+        if (element.callStatus == AppString.available) {
+          angelsAvailableList.add(element);
+          update();
+        } else if (element.callStatus == AppString.busy) {
+          angelsBusyList.add(element);
+          update();
+        } else {
+          angelsNotAvailableList.add(element);
+          update();
+        }
       }
     });
 
-    allAngelsListData = angelsAvailableList + angelsBusyList + angelsNotAvailableList;
+    allAngelsListData = angelsAvailableList + angelsBusyList + angelsNotAvailableList + availableCallStatusAngelsList;
     update();
-
     return allAngelsListData;
   }
 

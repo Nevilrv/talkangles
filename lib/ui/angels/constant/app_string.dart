@@ -1,6 +1,7 @@
 class AppString {
   static const talkAngels = "TALK ANGELS";
   static const online = "Online";
+  static const offline = "Offline";
   static const somethingWentWrong = "Something Went Wrong";
   static const loginSuccessfully = "Login Successfully";
   static const pleaseInstallTheWhatsapp = "Please install the whatsapp";
@@ -115,6 +116,7 @@ class AppString {
   static const pleaseFilledRequireFields = "Please Filled Require Fields";
   static const listing = "Listing";
   static const available = "Available";
+  static const notAvailable = "Not Available";
   static const busy = "Busy";
   static const yourWalletAmountIsExisted = "Your Wallet Amount is Existed";
   static const insufficientBalancePleaseRechargeYourAccount = "Insufficient balance. Please recharge your account.";
